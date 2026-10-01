@@ -199,7 +199,7 @@ export const TenantPortalPage: React.FC = () => {
 
           <div className="h-72 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={forecast?.forecast_data || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={forecast?.forecast_data || []} margin={{ top: 10, right: 10, left: 5, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorTenantPortal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.35} />

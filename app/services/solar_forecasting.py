@@ -9,8 +9,9 @@ weather observations.
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone, tzinfo
 from typing import List, Optional
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 from prophet import Prophet
@@ -28,6 +29,24 @@ logger = logging.getLogger(__name__)
 
 class SolarForecastingError(Exception):
     """Base exception for solar forecasting service failures."""
+
+
+def resolve_display_timezone(db: Session, estate_id: int) -> tzinfo:
+    """
+    Timezone used to render forecast timestamps.
+
+    Training data (NASA POWER) is stored in UTC (see WeatherObservation.timestamp),
+    but charts are read as wall-clock time in the estate's own timezone, so the
+    forecast points are converted before they leave the API.
+    """
+    estate = db.get(Estate, estate_id)
+    tz_name = getattr(estate, "timezone", None) if estate is not None else None
+    if tz_name:
+        try:
+            return ZoneInfo(tz_name)
+        except Exception as exc:  # unknown tz name / missing tzdata
+            logger.warning("Estate %s has unusable timezone %r: %s", estate_id, tz_name, exc)
+    return datetime.now().astimezone().tzinfo or timezone.utc
 
 
 def prepare_training_data(
@@ -135,15 +154,24 @@ def prepare_training_data(
 def train_prophet_model(df: pd.DataFrame) -> Prophet:
     """
     Train a Prophet model on the historical solar generation DataFrame.
-    Configured for hourly solar generation: daily & weekly seasonality enabled,
-    yearly seasonality disabled for 1-year datasets to prevent under-identification.
+
+    - ``growth='flat'``: PV output has no long-term trend, and a linear trend
+      extrapolated past the last training record (the forecast window can sit
+      months beyond it) either explodes to impossible kW values or collapses
+      below zero.
+    - ``daily_seasonality=True``: the hourly solar shape is always identifiable
+      from >= 24 hourly records.
+    - ``weekly_seasonality`` only with >= 14 days of history; with a handful of
+      days the weekly terms alias the daily shape and distort the curve.
+    - yearly seasonality stays off (the datasets here are too short to identify it).
     """
     if len(df) < 24:
         raise SolarForecastingError(f"Insufficient training records: required >= 24, got {len(df)}")
 
     model = Prophet(
+        growth="flat",
         daily_seasonality=True,
-        weekly_seasonality=True,
+        weekly_seasonality=len(df) >= 14 * 24,
         yearly_seasonality=False,
     )
     model.fit(df)
@@ -158,26 +186,37 @@ def generate_solar_forecast(
 ) -> SolarForecastResponse:
     """
     Generate a real Prophet-based solar PV generation forecast for the specified horizon.
+    The forecast window starts at the current hour (not at the end of the training
+    history) and every timestamp is returned in the estate's local timezone.
     Post-processes predictions and uncertainty bounds to guarantee non-negative solar generation.
     Returns a fully populated SolarForecastResponse with is_demo=False and complete provenance metadata.
     """
+    tz = resolve_display_timezone(db, estate_id)
+
     try:
         df = prepare_training_data(db, estate_id=estate_id)
         model = train_prophet_model(df)
     except Exception as exc:
         logger.warning("Prophet model training failed or missing data for estate_id=%s: %s", estate_id, exc)
-        return _fallback_demo_forecast(estate_id, hours, str(exc))
+        return _fallback_demo_forecast(estate_id, hours, str(exc), tz=tz)
 
     min_ts = df["ds"].min()
     max_ts = df["ds"].max()
     rec_count = len(df)
 
+    # Predict on a naive-UTC axis (the basis of the NASA POWER training rows),
+    # starting at the current hour so a "24h horizon" really covers the next 24h.
     if start_time is None:
-        future = model.make_future_dataframe(periods=hours, freq="h", include_history=False)
+        start_utc = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    elif start_time.tzinfo is not None:
+        start_utc = start_time.astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
     else:
-        st = start_time.replace(tzinfo=None) if start_time.tzinfo else start_time
-        st = st.replace(minute=0, second=0, microsecond=0)
-        future = pd.DataFrame({"ds": [st + timedelta(hours=i) for i in range(hours)]})
+        # Naive callers pass estate-local wall clock, same basis as the output.
+        start_utc = (
+            start_time.replace(tzinfo=tz).astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
+        )
+    start_naive = start_utc.replace(tzinfo=None)
+    future = pd.DataFrame({"ds": [start_naive + timedelta(hours=i) for i in range(hours)]})
 
     forecast_raw = model.predict(future)
 
@@ -187,7 +226,8 @@ def generate_solar_forecast(
 
     for _, row in forecast_raw.iterrows():
         ts_val: datetime = row["ds"]
-        ts_str = ts_val.strftime("%Y-%m-%dT%H:00:00")
+        # Model works in UTC; charts are read in the estate's timezone.
+        ts_str = ts_val.replace(tzinfo=timezone.utc).astimezone(tz).isoformat(timespec="seconds")
 
         # Post-processing: non-negative clipping for physical solar generation (Requirements 8 & 9)
         pred = round(max(0.0, float(row["yhat"])), 2)
@@ -224,6 +264,7 @@ def generate_solar_forecast(
         explanatory_note=(
             f"Prophet solar PV generation forecast trained on {rec_count:,} hourly "
             f"Model B PV generation estimates derived from NASA POWER weather observations ({min_ts.strftime('%Y-%m-%d')} to {max_ts.strftime('%Y-%m-%d')})."
+            f" Timestamps are in {getattr(tz, 'key', None) or tz}."
         ),
         model_name="Prophet",
         training_record_count=rec_count,
@@ -233,8 +274,14 @@ def generate_solar_forecast(
     )
 
 
-def _fallback_demo_forecast(estate_id: int, hours: int, reason: str) -> SolarForecastResponse:
-    now = datetime.now().replace(minute=0, second=0, microsecond=0)
+def _fallback_demo_forecast(
+    estate_id: int,
+    hours: int,
+    reason: str,
+    tz: Optional[tzinfo] = None,
+) -> SolarForecastResponse:
+    tz = tz or datetime.now().astimezone().tzinfo or timezone.utc
+    now = datetime.now(tz).replace(minute=0, second=0, microsecond=0)
     data: List[ForecastDataPoint] = []
     total_kwh = 0.0
     peak_kw = 0.0
@@ -259,7 +306,7 @@ def _fallback_demo_forecast(estate_id: int, hours: int, reason: str) -> SolarFor
 
         data.append(
             ForecastDataPoint(
-                timestamp=ts.strftime("%Y-%m-%dT%H:00:00"),
+                timestamp=ts.isoformat(timespec="seconds"),
                 predicted_value_kw=pred,
                 lower_bound_kw=lower,
                 upper_bound_kw=upper,
