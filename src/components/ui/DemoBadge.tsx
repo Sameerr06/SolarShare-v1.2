@@ -23,7 +23,7 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
     <div className="inline-flex items-center gap-1.5 group relative">
       <span
         className={`inline-flex items-center rounded-full uppercase font-bold tracking-wider font-mono ${sizePadding[size]}`}
-        style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)', color: '#a78bfa' }}
+        style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)', color: '#7c3aed' }}
       >
         {label}
       </span>
@@ -34,7 +34,7 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
             className="tooltip-fade absolute right-0 top-full mt-1.5 z-50 w-64 p-2.5 rounded-xl shadow-lg text-xs leading-relaxed"
             style={{ background: 'var(--surface-3)', border: '1px solid rgba(99,102,241,0.2)', color: 'var(--text-secondary)' }}
           >
-            <span className="font-semibold block mb-1" style={{ color: '#a78bfa' }}>Simulated Data Notice</span>
+            <span className="font-semibold block mb-1" style={{ color: '#7c3aed' }}>Simulated Data Notice</span>
             {note}
           </div>
         </div>
@@ -51,7 +51,7 @@ export const DemoBanner: React.FC<{ note?: string }> = ({ note }) => {
     >
       <div
         className="px-2 py-0.5 rounded-full font-mono text-[10px] uppercase font-bold tracking-wider shrink-0"
-        style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', color: '#a78bfa' }}
+        style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', color: '#7c3aed' }}
       >
         SIMULATED
       </div>

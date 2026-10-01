@@ -178,38 +178,38 @@ export const LocationModal: React.FC<LocationModalProps> = ({
 
   return (
     <div
-      className="overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+      className="overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="panel-in w-full max-w-2xl glass-panel bg-slate-900 border-slate-700 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden outline-none"
+        className="panel-in w-full max-w-2xl glass-panel bg-white border-slate-300 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden outline-none"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Estate location and weather telemetry"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white/90 shrink-0">
           <div className="flex items-center gap-3">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(99,102,241,0.15)' }}
             >
-              <MapPin className="w-5 h-5" style={{ color: '#818cf8' }} />
+              <MapPin className="w-5 h-5" style={{ color: '#6366f1' }} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white tracking-tight">
+              <h3 className="text-base font-bold text-slate-900 tracking-tight">
                 Estate Location &amp; Weather Telemetry
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 Change coordinates to fetch NASA POWER data for any location
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="pressable p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="pressable p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -219,7 +219,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
         {/* Content */}
         <div className="p-6 overflow-y-auto space-y-4 flex-1">
           {loading ? (
-            <div className="flex items-center gap-3 text-sm text-slate-400 py-8 justify-center">
+            <div className="flex items-center gap-3 text-sm text-slate-500 py-8 justify-center">
               <RefreshCw className="w-4 h-4 animate-spin" />
               Loading estate configuration...
             </div>
@@ -232,23 +232,23 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                   style={{ background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)' }}
                 >
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-widest font-semibold text-slate-400">
+                    <p className="text-[10px] uppercase tracking-widest font-semibold text-slate-500">
                       Active location
                     </p>
-                    <p className="text-sm font-semibold text-white truncate">{activeEstate.name}</p>
-                    <p className="text-[11px] font-mono" style={{ color: '#818cf8' }}>
+                    <p className="text-sm font-semibold text-slate-900 truncate">{activeEstate.name}</p>
+                    <p className="text-[11px] font-mono" style={{ color: '#6366f1' }}>
                       {fmtCoord(activeEstate.latitude, 'N', 'S')}{' '}
                       {fmtCoord(activeEstate.longitude, 'E', 'W')}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
                       Stored data
                     </p>
-                    <p className="text-xs font-mono text-slate-200">
+                    <p className="text-xs font-mono text-slate-800">
                       {activeEstate.weather_observation_count} obs
                     </p>
-                    <p className="text-xs font-mono text-slate-200">
+                    <p className="text-xs font-mono text-slate-800">
                       {activeEstate.solar_generation_estimate_count} est
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               )}
 
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(15,23,42,0.03)' }}>
                 {([
                   { id: 'presets' as Tab, label: 'Presets', icon: Globe },
                   { id: 'custom' as Tab, label: 'Custom', icon: MapPin },
@@ -269,7 +269,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`pressable flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium ${
-                        isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                        isActive ? 'text-slate-900' : 'text-slate-500 hover:text-slate-800'
                       }`}
                       style={
                         isActive
@@ -299,20 +299,20 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                           isCurrent ? '' : 'cursor-pointer'
                         }`}
                         style={{
-                          background: isCurrent ? 'rgba(99,102,241,0.12)' : 'rgba(15,23,42,0.8)',
-                          border: `1px solid ${isCurrent ? 'rgba(99,102,241,0.35)' : 'rgba(30,41,59,0.9)'}`,
+                          background: isCurrent ? 'rgba(99,102,241,0.12)' : 'rgba(15,23,42,0.05)',
+                          border: `1px solid ${isCurrent ? 'rgba(99,102,241,0.35)' : 'rgba(15,23,42,0.12)'}`,
                         }}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="text-xs font-semibold text-white group-hover:text-amber-400 transition-colors">
+                          <span className="text-xs font-semibold text-slate-900 group-hover:text-amber-700 transition-colors">
                             {preset.name}
                           </span>
                           {isCurrent && (
-                            <Check className="w-3.5 h-3.5 shrink-0" style={{ color: '#34d399' }} />
+                            <Check className="w-3.5 h-3.5 shrink-0" style={{ color: '#059669' }} />
                           )}
                         </div>
-                        <p className="text-[10px] text-slate-400">{preset.region}</p>
-                        <p className="text-[10px] font-mono" style={{ color: '#818cf8' }}>
+                        <p className="text-[10px] text-slate-500">{preset.region}</p>
+                        <p className="text-[10px] font-mono" style={{ color: '#6366f1' }}>
                           {fmtCoord(preset.latitude, 'N', 'S')}{' '}
                           {fmtCoord(preset.longitude, 'E', 'W')}
                         </p>
@@ -320,8 +320,8 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                         <div className="flex items-center gap-1.5 pt-1">
                           <button
                             onClick={() => handleSelectPreset(preset)}
-                            className="pressable px-2 py-1 rounded text-[10px] font-medium text-slate-300 hover:text-white"
-                            style={{ background: 'rgba(255,255,255,0.05)' }}
+                            className="pressable px-2 py-1 rounded text-[10px] font-medium text-slate-700 hover:text-slate-900"
+                            style={{ background: 'rgba(15,23,42,0.05)' }}
                           >
                             Select
                           </button>
@@ -346,7 +346,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               {activeTab === 'custom' && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                       Location name
                     </label>
                     <input
@@ -354,13 +354,13 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. My Industrial Estate"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Latitude
                       </label>
                       <input
@@ -370,12 +370,12 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                         max={90}
                         value={latitude}
                         onChange={(e) => setLatitude(Number(e.target.value))}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition-colors"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:outline-none focus:border-indigo-500 transition-colors"
                       />
                       <p className="text-[10px] text-slate-500 mt-1">-90 to 90</p>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                         Longitude
                       </label>
                       <input
@@ -385,20 +385,20 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                         max={180}
                         value={longitude}
                         onChange={(e) => setLongitude(Number(e.target.value))}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition-colors"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:outline-none focus:border-indigo-500 transition-colors"
                       />
                       <p className="text-[10px] text-slate-500 mt-1">-180 to 180</p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1.5">
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1.5">
                       Timezone
                     </label>
                     <select
                       value={timezone}
                       onChange={(e) => setTimezone(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 transition-colors"
                     >
                       {[
                         'Asia/Kolkata',
@@ -420,7 +420,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap">
-                    <label className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-[11px] text-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={useCache}
@@ -429,7 +429,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                       />
                       Use cached NASA POWER responses
                     </label>
-                    <label className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-[11px] text-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={saveAsNew}
@@ -444,7 +444,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                   {coordsChanged && (
                     <div
                       className="flex items-start gap-2 p-2.5 rounded-lg text-[11px]"
-                      style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.22)', color: '#fbbf24' }}
+                      style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.22)', color: '#d97706' }}
                     >
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                       <span>
@@ -461,7 +461,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               {activeTab === 'existing' && (
                 <div className="space-y-2">
                   {estates.length === 0 ? (
-                    <p className="text-xs text-slate-400 py-6 text-center">
+                    <p className="text-xs text-slate-500 py-6 text-center">
                       No saved locations yet.
                     </p>
                   ) : (
@@ -475,16 +475,16 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                             onLocationChanged?.();
                           }}
                           className={`pressable w-full text-left p-3 rounded-xl flex items-center justify-between gap-3 ${
-                            isActive ? '' : 'hover:bg-white/[0.03]'
+                            isActive ? '' : 'hover:bg-slate-100'
                           }`}
                           style={{
-                            background: isActive ? 'rgba(99,102,241,0.1)' : 'rgba(15,23,42,0.8)',
-                            border: `1px solid ${isActive ? 'rgba(99,102,241,0.3)' : 'rgba(30,41,59,0.9)'}`,
+                            background: isActive ? 'rgba(99,102,241,0.1)' : 'rgba(15,23,42,0.05)',
+                            border: `1px solid ${isActive ? 'rgba(99,102,241,0.3)' : 'rgba(15,23,42,0.12)'}`,
                           }}
                         >
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-white truncate">{est.name}</p>
-                            <p className="text-[10px] font-mono" style={{ color: '#818cf8' }}>
+                            <p className="text-xs font-semibold text-slate-900 truncate">{est.name}</p>
+                            <p className="text-[10px] font-mono" style={{ color: '#6366f1' }}>
                               {fmtCoord(est.latitude, 'N', 'S')}{' '}
                               {fmtCoord(est.longitude, 'E', 'W')}
                             </p>
@@ -493,7 +493,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                               {est.solar_generation_estimate_count} estimates
                             </p>
                           </div>
-                          {isActive && <Check className="w-4 h-4 shrink-0" style={{ color: '#34d399' }} />}
+                          {isActive && <Check className="w-4 h-4 shrink-0" style={{ color: '#059669' }} />}
                         </button>
                       );
                     })
@@ -505,7 +505,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               {formError && (
                 <div
                   className="flex items-start gap-2 p-2.5 rounded-lg text-[11px]"
-                  style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
+                  style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', color: '#dc2626' }}
                 >
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   <span>{formError}</span>
@@ -515,7 +515,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               {syncWarning && !formError && (
                 <div
                   className="flex items-start gap-2 p-2.5 rounded-lg text-[11px]"
-                  style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.22)', color: '#fbbf24' }}
+                  style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.22)', color: '#d97706' }}
                 >
                   <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   <span>{syncWarning}</span>
@@ -525,7 +525,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               {syncMessage && !syncWarning && (
                 <div
                   className="flex items-start gap-2 p-2.5 rounded-lg text-[11px]"
-                  style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#34d399' }}
+                  style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)', color: '#059669' }}
                 >
                   <Check className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                   <span>{syncMessage}</span>
@@ -548,14 +548,14 @@ export const LocationModal: React.FC<LocationModalProps> = ({
 
         {/* Footer actions */}
         <div
-          className="px-6 py-4 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0"
-          style={{ background: 'rgba(2,6,23,0.5)' }}
+          className="px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3 shrink-0"
+          style={{ background: 'rgba(255,255,255,0.92)' }}
         >
           <button
             onClick={handleSyncOnly}
             disabled={busy || syncingWeather || !activeEstate}
-            className="pressable px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-300 disabled:opacity-40 disabled:pointer-events-none"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+            className="pressable px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1.5 text-slate-700 disabled:opacity-40 disabled:pointer-events-none"
+            style={{ background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.08)' }}
             title="Fetch NASA POWER data for the coordinates already saved"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncingWeather ? 'animate-spin' : ''}`} />
@@ -565,7 +565,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="pressable px-3.5 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white"
+              className="pressable px-3.5 py-2 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900"
             >
               Close
             </button>

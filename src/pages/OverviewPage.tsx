@@ -71,12 +71,12 @@ export const OverviewPage: React.FC = () => {
             </h1>
             <span
               className="px-2 py-0.5 rounded text-[11px] font-semibold"
-              style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', color: '#34d399' }}
+              style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', color: '#059669' }}
             >
               SYSTEM ONLINE
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             Dataset telemetry (8.44M observations, 321 series) and operational estate balance.
           </p>
         </div>
@@ -103,7 +103,7 @@ export const OverviewPage: React.FC = () => {
           unit="obs"
           subtext="321 Public Load Series"
           icon={Database}
-          iconColor="text-emerald-400"
+          iconColor="text-emerald-700"
         />
         <StatCard
           title="Computed Profiles"
@@ -111,7 +111,7 @@ export const OverviewPage: React.FC = () => {
           unit="profiles"
           subtext="6 Cluster Centroid Profiles"
           icon={Layers}
-          iconColor="text-cyan-400"
+          iconColor="text-cyan-700"
         />
         <StatCard
           title="Installed PV Capacity"
@@ -119,7 +119,7 @@ export const OverviewPage: React.FC = () => {
           unit="kW"
           subtext={`Current Output: ${solar_metrics.current_generation_kw} kW`}
           icon={Sun}
-          iconColor="text-amber-400"
+          iconColor="text-amber-700"
           isDemo={true}
         />
         <StatCard
@@ -128,7 +128,7 @@ export const OverviewPage: React.FC = () => {
           unit="/ mo"
           subtext="Tamil Nadu ToU Tariff"
           icon={Receipt}
-          iconColor="text-violet-400"
+          iconColor="text-violet-600"
           isDemo={true}
         />
       </div>
@@ -139,17 +139,17 @@ export const OverviewPage: React.FC = () => {
         <div className="glass-panel glass-panel-hover p-4 flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-amber-400" />
+              <Activity className="w-4 h-4 text-amber-700" />
               <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Centroid Profile Archetypes</h3>
             </div>
             <span
               className="px-2 py-0.5 rounded font-mono text-[10px] font-semibold"
-              style={{ background: 'rgba(99,102,241,0.12)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)' }}
+              style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1', border: '1px solid rgba(99,102,241,0.2)' }}
             >
               k=6 WARD
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             Selected cluster centroids representing 321 public load series.
           </p>
 
@@ -157,31 +157,31 @@ export const OverviewPage: React.FC = () => {
             {selected_profiles_summary.map((prof) => (
               <div
                 key={prof.series_name}
-                className="pressable p-2.5 rounded-xl flex items-center justify-between hover:bg-white/[0.03]"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                className="pressable p-2.5 rounded-xl flex items-center justify-between hover:bg-slate-100"
+                style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.06)' }}
               >
                 <div className="flex items-center gap-2.5">
                   <span
                     className="w-6 h-6 rounded-lg font-mono text-[11px] font-bold flex items-center justify-center"
-                    style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8' }}
+                    style={{ background: 'rgba(99,102,241,0.15)', color: '#6366f1' }}
                   >
                     C{prof.cluster_id}
                   </span>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-xs text-white">
+                      <span className="font-semibold text-xs text-slate-900">
                         {prof.series_name}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400">
-                      Mean: <strong className="text-slate-200 font-mono">{prof.mean_demand_kw} kW</strong>
+                    <span className="text-[10px] text-slate-500">
+                      Mean: <strong className="text-slate-800 font-mono">{prof.mean_demand_kw} kW</strong>
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right text-xs font-mono">
-                  <div className="text-slate-300 text-[11px]">CV: {(prof.cv ?? prof.coefficient_of_variation).toFixed(2)}</div>
-                  <div className="text-slate-400 text-[10px]">PAR: {(prof.par ?? prof.peak_to_average_ratio).toFixed(2)}</div>
+                  <div className="text-slate-700 text-[11px]">CV: {(prof.cv ?? prof.coefficient_of_variation).toFixed(2)}</div>
+                  <div className="text-slate-500 text-[10px]">PAR: {(prof.par ?? prof.peak_to_average_ratio).toFixed(2)}</div>
                 </div>
               </div>
             ))}
@@ -189,7 +189,7 @@ export const OverviewPage: React.FC = () => {
 
           <Link
             to="/load-profiles"
-            className="w-full py-1.5 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium rounded text-center transition-colors block"
+            className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded text-center transition-colors block"
           >
             View Full 319 Profiles Table →
           </Link>
@@ -201,11 +201,11 @@ export const OverviewPage: React.FC = () => {
           <div className="glass-panel glass-panel-hover p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <Sun className="w-4 h-4 text-amber-400" />
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <Sun className="w-4 h-4 text-amber-700" />
                   Estate Energy Balance (24h Telemetry)
                 </h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Solar PV output vs total estate demand (500 kW System).
                 </p>
               </div>
@@ -225,12 +225,12 @@ export const OverviewPage: React.FC = () => {
                       <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                   <XAxis dataKey="hour" stroke="#64748b" fontSize={10} />
                   <YAxis stroke="#64748b" fontSize={10} unit=" kW" />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }}
-                    itemStyle={{ color: '#e2e8f0' }}
+                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }}
+                    itemStyle={{ color: '#0f172a' }}
                   />
                   <Area type="monotone" dataKey="solar" name="Solar Gen (kW)" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorSolar)" animationDuration={800} animationEasing="ease-out" />
                   <Area type="monotone" dataKey="demand" name="Estate Demand (kW)" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorDemand)" animationDuration={800} animationEasing="ease-out" />
@@ -247,8 +247,8 @@ export const OverviewPage: React.FC = () => {
                 <DemoBadge size="sm" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold font-mono text-white">{battery_metrics.current_soc_pct}%</span>
-                <span className="text-xs text-emerald-400 font-medium">{battery_metrics.status}</span>
+                <span className="text-lg font-semibold font-mono text-slate-900">{battery_metrics.current_soc_pct}%</span>
+                <span className="text-xs text-emerald-700 font-medium">{battery_metrics.status}</span>
               </div>
               <div className="progress-track">
                 <div
@@ -256,7 +256,7 @@ export const OverviewPage: React.FC = () => {
                   style={{ width: `${battery_metrics.current_soc_pct}%`, background: 'linear-gradient(90deg, #34d399, #6ee7b7)' }}
                 />
               </div>
-              <p className="text-[10px] font-mono text-slate-400">
+              <p className="text-[10px] font-mono text-slate-500">
                 {battery_metrics.stored_energy_kwh} / {battery_metrics.capacity_kwh} kWh
               </p>
             </div>
@@ -267,8 +267,8 @@ export const OverviewPage: React.FC = () => {
                 <DemoBadge size="sm" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold font-mono text-amber-400">{allocation_metrics.solar_coverage_pct}%</span>
-                <span className="text-xs text-slate-400">of load</span>
+                <span className="text-lg font-semibold font-mono text-amber-700">{allocation_metrics.solar_coverage_pct}%</span>
+                <span className="text-xs text-slate-500">of load</span>
               </div>
               <div className="progress-track">
                 <div
@@ -276,7 +276,7 @@ export const OverviewPage: React.FC = () => {
                   style={{ width: `${allocation_metrics.solar_coverage_pct}%`, background: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }}
                 />
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-slate-500">
                 Active Tenants: {allocation_metrics.active_tenants}
               </p>
             </div>
@@ -287,8 +287,8 @@ export const OverviewPage: React.FC = () => {
                 <DemoBadge size="sm" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold font-mono text-cyan-400">{allocation_metrics.grid_dependency_pct}%</span>
-                <span className="text-xs text-slate-400">supplemental</span>
+                <span className="text-lg font-semibold font-mono text-cyan-700">{allocation_metrics.grid_dependency_pct}%</span>
+                <span className="text-xs text-slate-500">supplemental</span>
               </div>
               <div className="progress-track">
                 <div
@@ -296,7 +296,7 @@ export const OverviewPage: React.FC = () => {
                   style={{ width: `${allocation_metrics.grid_dependency_pct}%`, background: 'linear-gradient(90deg, #6366f1, #818cf8)' }}
                 />
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-slate-500">
                 BESS Share: {allocation_metrics.battery_contribution_pct}%
               </p>
             </div>

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -59,8 +59,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
           </div>
           {!collapsed && (
             <div className="flex flex-col min-w-0">
-              <span className="font-bold text-[15px] text-white tracking-tight leading-tight">
-                Solar<span style={{ color: '#818cf8' }}>Share</span>
+              <span className="font-bold text-[15px] text-slate-900 tracking-tight leading-tight">
+                Solar<span style={{ color: '#6366f1' }}>Share</span>
               </span>
               <span className="text-[10px] font-medium tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
                 {isTenant ? 'Tenant Portal' : 'Energy Hub'}
@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
 className={({ isActive }) =>
                   `sidebar-nav-item nav-item-glow group relative flex items-center gap-3 rounded-xl transition-all duration-200 ${
                     collapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5'
-                  } ${isActive ? 'nav-active-pill' : 'hover:bg-white/[0.04]'}`
+                  } ${isActive ? 'nav-active-pill' : 'hover:bg-slate-100'}`
                 }
               >
                 {({ isActive }) => (
@@ -108,12 +108,12 @@ className={({ isActive }) =>
                     />
                     <Icon
                       className={`icon-pop shrink-0 ${collapsed ? 'w-5 h-5' : 'w-4 h-4'}`}
-                      style={{ color: isActive ? '#818cf8' : 'var(--text-secondary)' }}
+                      style={{ color: isActive ? '#6366f1' : 'var(--text-secondary)' }}
                     />
                     {!collapsed && (
                       <span
                         className="text-[13px] font-medium truncate"
-                        style={{ color: isActive ? '#e0e2ff' : 'var(--text-secondary)' }}
+                        style={{ color: isActive ? '#4f46e5' : 'var(--text-secondary)' }}
                       >
                         {item.name}
                       </span>
@@ -121,7 +121,7 @@ className={({ isActive }) =>
                     {!collapsed && isActive && (
                       <span
                         className="ml-auto w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ background: '#818cf8', boxShadow: '0 0 6px #818cf8' }}
+                        style={{ background: '#6366f1', boxShadow: '0 0 6px #6366f1' }}
                       />
                     )}
                     {collapsed && <span className="sidebar-tooltip">{item.name}</span>}
@@ -140,7 +140,7 @@ className={({ isActive }) =>
             <button
               onClick={logout}
 className="pressable w-9 h-9 rounded-xl flex items-center justify-center hover:bg-red-500/15"
-              style={{ color: '#f87171' }}
+              style={{ color: '#dc2626' }}
               title="Logout"
               aria-label="Logout"
             >
@@ -149,7 +149,7 @@ className="pressable w-9 h-9 rounded-xl flex items-center justify-center hover:b
             <span className="sidebar-tooltip">Logout</span>
           </div>
         ) : (
-          <div className="rounded-xl p-3 space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.12)' }}>
+          <div className="rounded-xl p-3 space-y-3" style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(99,102,241,0.12)' }}>
             {isTenant && user ? (
               <>
                 <div className="flex items-center gap-2.5">
@@ -160,14 +160,14 @@ className="pressable w-9 h-9 rounded-xl flex items-center justify-center hover:b
                     {(user.tenant_name || user.email || 'T').charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12px] font-semibold text-white truncate">{user.tenant_name || user.email}</div>
-                    <div className="text-[10px] font-mono" style={{ color: '#818cf8' }}>ID: {user.source_client_series_id || 'T258'}</div>
+                    <div className="text-[12px] font-semibold text-slate-900 truncate">{user.tenant_name || user.email}</div>
+                    <div className="text-[10px] font-mono" style={{ color: '#6366f1' }}>ID: {user.source_client_series_id || 'T258'}</div>
                   </div>
                 </div>
                 <button
                   onClick={logout}
 className="pressable w-full py-1.5 px-3 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-red-500/15"
-                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', color: '#f87171' }}
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', color: '#dc2626' }}
                 >
                   <LogOut className="w-3 h-3" />Sign Out
                 </button>
@@ -178,26 +178,26 @@ className="pressable w-full py-1.5 px-3 rounded-lg text-[11px] font-medium flex 
                   <div className="flex items-center gap-1.5">
 <div className="relative w-2 h-2">
                         <span className="absolute inset-0 rounded-full ping-slow" style={{ background: 'rgba(52,211,153,0.4)' }} />
-                        <span className="relative block w-2 h-2 rounded-full dot-breathe" style={{ background: '#34d399' }} />
+                        <span className="relative block w-2 h-2 rounded-full dot-breathe" style={{ background: '#059669' }} />
                       </div>
-                    <span className="text-[11px] font-medium" style={{ color: '#34d399' }}>Online</span>
+                    <span className="text-[11px] font-medium" style={{ color: '#059669' }}>Online</span>
                   </div>
                   <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>v0.2.0</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="grid grid-cols-2 gap-2 pt-2" style={{ borderTop: '1px solid rgba(15,23,42,0.05)' }}>
                   <div className="text-center">
-                    <div className="text-[14px] font-bold text-white">319</div>
+                    <div className="text-[14px] font-bold text-slate-900">319</div>
                     <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Profiles</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-[14px] font-bold text-white">6</div>
+                    <div className="text-[14px] font-bold text-slate-900">6</div>
                     <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Tenants</div>
                   </div>
                 </div>
                 <button
                   onClick={logout}
 className="pressable w-full py-1.5 px-3 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-red-500/15"
-                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', color: '#f87171' }}
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', color: '#dc2626' }}
                 >
                   <LogOut className="w-3 h-3" />Sign Out
                 </button>

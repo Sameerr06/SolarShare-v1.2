@@ -25,5 +25,8 @@ pandas>=2.2.3
 scipy>=1.15.1
 scikit-learn>=1.6.1
 
+# PDF generation (Phase 4: invoicing)
+reportlab>=4.2.5
+
 # Prophet — install separately after above
 prophet>=1.4.0

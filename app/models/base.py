@@ -16,6 +16,7 @@ from app.models.user import User  # noqa: F401
 from app.models.weather import WeatherObservation, NasaPowerCache, SolarGenerationEstimate  # noqa: F401
 from app.models.public_load import PublicLoadSeries, PublicLoadObservation  # noqa: F401
 from app.models.load_profile import PublicLoadSeriesProfile  # noqa: F401
+from app.models.invoice import Invoice, InvoiceLineItem  # noqa: F401
 
 __all__ = [
     "Estate",
@@ -32,4 +33,6 @@ __all__ = [
     "PublicLoadSeries",
     "PublicLoadObservation",
     "PublicLoadSeriesProfile",
+    "Invoice",
+    "InvoiceLineItem",
 ]

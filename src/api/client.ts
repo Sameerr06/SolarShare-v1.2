@@ -12,6 +12,7 @@ import {
   BatteryStatusResponse,
   TariffRead,
   BillingSummaryResponse,
+  InvoiceListResponse,
   AnalyticsOverviewResponse,
   HealthCheckResponse,
   UserRead,
@@ -68,6 +69,30 @@ export const clearActiveEstateId = (): void => {
 /** Resolve an explicit id, else the active estate. */
 const estateParam = (estateId?: number): { estate_id?: number } =>
   estateId !== undefined ? { estate_id: estateId } : { estate_id: getActiveEstateId() };
+
+/** Trigger a browser download for a Blob (PDF etc.). */
+export const saveBlob = (blob: Blob, filename: string): void => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+/** Pull the filename out of a Content-Disposition header, else use the fallback. */
+const filenameFromDisposition = (headers: unknown, fallback: string): string => {
+  const h = headers as Record<string, unknown> | undefined;
+  const raw =
+    (h?.['content-disposition'] as string | undefined) ??
+    (typeof (h as { get?: (k: string) => string | null })?.get === 'function'
+      ? (h as unknown as { get: (k: string) => string | null }).get('content-disposition') ?? undefined
+      : undefined);
+  const match = raw && /filename="?([^";]+)"?/i.exec(raw);
+  return match?.[1] ?? fallback;
+};
 
 export const api = {
   // Auth
@@ -170,6 +195,37 @@ export const api = {
   getBillingSummary: async (month = '2026-08'): Promise<BillingSummaryResponse> => {
     const { data } = await apiClient.get<BillingSummaryResponse>('/billing/summary', { params: { month } });
     return data;
+  },
+
+  // Invoices & PDF downloads
+  listInvoices: async (month = '2026-08'): Promise<InvoiceListResponse> => {
+    const { data } = await apiClient.get<InvoiceListResponse>('/billing/invoices', { params: { month } });
+    return data;
+  },
+
+  generateInvoices: async (month = '2026-08'): Promise<InvoiceListResponse> => {
+    const { data } = await apiClient.post<InvoiceListResponse>('/billing/invoices/generate', { month });
+    return data;
+  },
+
+  /** Download a single tenant's invoice PDF (admin passes tenantId; tenants omit it for their own). */
+  downloadInvoicePdf: async (month = '2026-08', tenantId?: number): Promise<void> => {
+    const response = await apiClient.get<Blob>('/billing/invoices/pdf', {
+      params: tenantId !== undefined ? { month, tenant_id: tenantId } : { month },
+      responseType: 'blob',
+    });
+    const filename = filenameFromDisposition(response.headers, `invoice-${month}.pdf`);
+    saveBlob(response.data, filename);
+  },
+
+  /** Download the consolidated estate-wide billing summary PDF (admin only). */
+  downloadEstateSummaryPdf: async (month = '2026-08'): Promise<void> => {
+    const response = await apiClient.get<Blob>('/billing/invoices/estate/summary.pdf', {
+      params: { month },
+      responseType: 'blob',
+    });
+    const filename = filenameFromDisposition(response.headers, `estate-billing-summary-${month}.pdf`);
+    saveBlob(response.data, filename);
   },
 
   // Analytics (REAL)

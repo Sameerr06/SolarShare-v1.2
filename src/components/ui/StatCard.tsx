@@ -31,7 +31,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   unit,
   subtext,
   icon: Icon,
-  iconColor = '#818cf8',
+  iconColor = '#6366f1',
   iconBg,
   trend,
   isDemo = false,
@@ -75,7 +75,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       {(subtext || trend) && (
         <div
           className="mt-3 pt-3 flex items-center justify-between"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+          style={{ borderTop: '1px solid rgba(15,23,42,0.05)' }}
         >
           {subtext && (
             <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
@@ -87,8 +87,8 @@ export const StatCard: React.FC<StatCardProps> = ({
               className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
               style={
                 trend.isPositive
-                  ? { background: 'rgba(52,211,153,0.1)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)' }
-                  : { background: 'rgba(248,113,113,0.1)', color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }
+                  ? { background: 'rgba(52,211,153,0.1)', color: '#059669', border: '1px solid rgba(52,211,153,0.2)' }
+                  : { background: 'rgba(248,113,113,0.1)', color: '#dc2626', border: '1px solid rgba(248,113,113,0.2)' }
               }
             >
               {trend.isPositive ? '↑' : '↓'} {trend.value}

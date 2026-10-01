@@ -60,14 +60,14 @@ export const AnalyticsPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               Dataset Analytics & Statistical Overview
             </h1>
-            <span className="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-mono">
+            <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-mono">
               REAL DATASET
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             Statistical metrics derived from 8,443,584 hourly observation records across 321 public load series.
           </p>
         </div>
@@ -81,7 +81,7 @@ export const AnalyticsPage: React.FC = () => {
           unit="obs"
           subtext="2012-01-01 to 2014-12-31"
           icon={Database}
-          iconColor="text-emerald-400"
+          iconColor="text-emerald-700"
         />
         <StatCard
           title="Zenodo Public Series"
@@ -89,7 +89,7 @@ export const AnalyticsPage: React.FC = () => {
           unit="series"
           subtext="Zenodo Electricity Dataset"
           icon={Activity}
-          iconColor="text-amber-400"
+          iconColor="text-amber-700"
         />
         <StatCard
           title="Profiles Computed"
@@ -97,7 +97,7 @@ export const AnalyticsPage: React.FC = () => {
           unit="profiles"
           subtext="Ward Hierarchical Clustering"
           icon={Layers}
-          iconColor="text-cyan-400"
+          iconColor="text-cyan-700"
         />
         <StatCard
           title="Cluster Centroids"
@@ -105,20 +105,20 @@ export const AnalyticsPage: React.FC = () => {
           unit="selected"
           subtext="Nearest Centroid Series"
           icon={Award}
-          iconColor="text-violet-400"
+          iconColor="text-violet-600"
         />
       </div>
 
       {/* Comparison Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* CV vs PAR Chart */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-amber-700" />
               Coefficient of Variation (CV) vs Peak-to-Average (PAR)
             </h3>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-mono text-[10px]">
               k=6 CENTROIDS
             </span>
           </div>
@@ -126,10 +126,10 @@ export const AnalyticsPage: React.FC = () => {
           <div className="h-64 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={cvParChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                 <XAxis dataKey="name" stroke="#64748b" fontSize={10} />
                 <YAxis stroke="#64748b" fontSize={10} />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
                 <Bar dataKey="cv" name="Coefficient of Variation (CV)" fill="#f59e0b" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="par" name="Peak-to-Average Ratio (PAR)" fill="#06b6d4" radius={[2, 2, 0, 0]} />
@@ -139,13 +139,13 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Mean vs Peak Demand Chart */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-700" />
               Mean Demand vs Peak Demand Output (kW)
             </h3>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-mono text-[10px]">
               k=6 CENTROIDS
             </span>
           </div>
@@ -153,10 +153,10 @@ export const AnalyticsPage: React.FC = () => {
           <div className="h-64 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={cvParChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                 <XAxis dataKey="name" stroke="#64748b" fontSize={10} />
                 <YAxis stroke="#64748b" fontSize={10} unit=" kW" />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
                 <Bar dataKey="meanKw" name="Mean Demand (kW)" fill="#10b981" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="maxKw" name="Peak Demand (Max kW)" fill="#8b5cf6" radius={[2, 2, 0, 0]} />
@@ -167,44 +167,44 @@ export const AnalyticsPage: React.FC = () => {
       </div>
 
       {/* Selected Profiles Statistical Summary Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden space-y-0">
-        <div className="p-3 border-b border-slate-800 flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden space-y-0">
+        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
             6 Selected Centroid Series Statistical Summary
           </h3>
-          <span className="text-[11px] text-slate-400 font-mono">Ingested Records</span>
+          <span className="text-[11px] text-slate-500 font-mono">Ingested Records</span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs table-interactive">
             <thead>
-              <tr className="bg-slate-950 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">
                 <th className="py-2.5 px-3">Cluster</th>
                 <th className="py-2.5 px-3">Series Name</th>
                 <th className="py-2.5 px-3 text-right">Mean Demand (kW)</th>
                 <th className="py-2.5 px-3 text-right">Peak Demand (kW)</th>
                 <th className="py-2.5 px-3 text-right">CV</th>
                 <th className="py-2.5 px-3 text-right">PAR</th>
-                <th className="py-2.5 px-3 text-right text-amber-400">Day/Night Ratio</th>
-                <th className="py-2.5 px-3 text-right text-cyan-400">TOU Peak Overlap</th>
+                <th className="py-2.5 px-3 text-right text-amber-700">Day/Night Ratio</th>
+                <th className="py-2.5 px-3 text-right text-cyan-700">TOU Peak Overlap</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+            <tbody className="divide-y divide-slate-200/60 font-mono text-slate-700">
               {selectedProfiles.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-2.5 px-3 font-sans font-medium text-amber-400">Cluster #{p.cluster_id}</td>
-                  <td className="py-2.5 px-3 font-sans font-medium text-white flex items-center gap-2">
+                <tr key={p.id} className="hover:bg-slate-100/40 transition-colors">
+                  <td className="py-2.5 px-3 font-sans font-medium text-amber-700">Cluster #{p.cluster_id}</td>
+                  <td className="py-2.5 px-3 font-sans font-medium text-slate-900 flex items-center gap-2">
                     {p.series_name}
-                    <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[9px] font-mono">
+                    <span className="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-700 border border-amber-500/30 text-[9px] font-mono">
                       CENTROID
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 text-right font-semibold text-white">{p.mean_demand_kw.toFixed(2)}</td>
+                  <td className="py-2.5 px-3 text-right font-semibold text-slate-900">{p.mean_demand_kw.toFixed(2)}</td>
                   <td className="py-2.5 px-3 text-right">{p.max_demand_kw.toFixed(2)}</td>
                   <td className="py-2.5 px-3 text-right">{p.coefficient_of_variation.toFixed(3)}</td>
                   <td className="py-2.5 px-3 text-right">{p.peak_to_average_ratio.toFixed(3)}</td>
-                  <td className="py-2.5 px-3 text-right text-amber-400">{p.day_night_ratio.toFixed(2)}</td>
-                  <td className="py-2.5 px-3 text-right text-cyan-400 font-semibold">{p.tou_peak_overlap_pct.toFixed(1)}%</td>
+                  <td className="py-2.5 px-3 text-right text-amber-700">{p.day_night_ratio.toFixed(2)}</td>
+                  <td className="py-2.5 px-3 text-right text-cyan-700 font-semibold">{p.tou_peak_overlap_pct.toFixed(1)}%</td>
                 </tr>
               ))}
             </tbody>

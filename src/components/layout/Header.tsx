@@ -58,8 +58,8 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const healthColor =
-    healthStatus === 'healthy' ? '#34d399' :
-    healthStatus === 'checking' ? '#fbbf24' : '#f87171';
+    healthStatus === 'healthy' ? '#059669' :
+    healthStatus === 'checking' ? '#d97706' : '#dc2626';
 
   const healthLabel =
     healthStatus === 'healthy' ? 'Connected' :
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
       className={`fixed top-0 right-0 z-30 h-16 transition-all duration-300 flex items-center justify-between px-5`}
       style={{
         left: collapsed ? '70px' : '240px',
-        background: 'rgba(13,17,23,0.85)',
+        background: 'rgba(255,255,255,0.88)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(99,102,241,0.1)',
       }}
@@ -80,8 +80,8 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Sidebar toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06]"
-          style={{ color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.06)' }}
+className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100"
+          style={{ color: 'var(--text-secondary)', border: '1px solid rgba(15,23,42,0.06)' }}
           title="Toggle Navigation Sidebar"
           aria-label="Toggle navigation sidebar"
         >
@@ -100,8 +100,8 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
           style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)' }}
           title={isTenant ? 'Estate location is managed by the administrator' : 'Change estate location and fetch data for those coordinates'}
         >
-          <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: '#818cf8' }} />
-          <span className="text-[12px] font-medium text-white">
+          <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: '#6366f1' }} />
+          <span className="text-[12px] font-medium text-slate-900">
             {activeEstate?.name ?? 'Coimbatore MSME Estate'}
           </span>
           <span className="text-[10px] font-mono hidden md:inline" style={{ color: 'var(--text-muted)' }}>
@@ -112,7 +112,7 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
           {activeEstate && activeEstate.weather_observation_count > 0 && (
             <span
               className="text-[9px] font-mono px-1 py-0.5 rounded hidden lg:inline"
-              style={{ background: 'rgba(52,211,153,0.12)', color: '#34d399' }}
+              style={{ background: 'rgba(52,211,153,0.12)', color: '#059669' }}
               title={`${activeEstate.weather_observation_count} observations stored for these coordinates`}
             >
               {activeEstate.weather_observation_count} obs
@@ -126,12 +126,12 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
             className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
             style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)' }}
           >
-            <Building2 className="w-3.5 h-3.5 shrink-0" style={{ color: '#818cf8' }} />
-            <span className="text-[12px] font-semibold text-white truncate max-w-[200px]">{user.tenant_name}</span>
+            <Building2 className="w-3.5 h-3.5 shrink-0" style={{ color: '#6366f1' }} />
+            <span className="text-[12px] font-semibold text-slate-900 truncate max-w-[200px]">{user.tenant_name}</span>
             {user.source_client_series_id && (
               <span
                 className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-                style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8' }}
+                style={{ background: 'rgba(99,102,241,0.15)', color: '#6366f1' }}
               >
                 {user.source_client_series_id}
               </span>
@@ -145,7 +145,7 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
 {/* API Status */}
         <div
           className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors duration-200 hover:brightness-125 cursor-default"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: 'rgba(15,23,42,0.04)', border: '1px solid rgba(15,23,42,0.06)' }}
           title={`Backend API status: ${healthLabel}`}
         >
           <span
@@ -160,10 +160,10 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
         {/* Refresh */}
         <button
           onClick={handleRefreshClick}
-          className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06]"
+          className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100"
           style={{
-            color: isRefreshing ? '#818cf8' : 'var(--text-secondary)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            color: isRefreshing ? '#6366f1' : 'var(--text-secondary)',
+            border: '1px solid rgba(15,23,42,0.06)',
           }}
           title="Refresh All Telemetry"
           aria-label="Refresh all telemetry"
@@ -173,8 +173,8 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
 
         {/* Notifications (decorative) */}
         <button
-          className="pressable relative w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06]"
-          style={{ color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.06)' }}
+          className="pressable relative w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100"
+          style={{ color: 'var(--text-secondary)', border: '1px solid rgba(15,23,42,0.06)' }}
           title="Notifications"
           aria-label="Notifications"
         >
@@ -187,8 +187,8 @@ className="pressable w-8 h-8 rounded-lg flex items-center justify-center hover:b
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
           style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}
         >
-          <ShieldCheck className="w-3.5 h-3.5" style={{ color: '#818cf8' }} />
-          <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: '#c7d2fe' }}>
+          <ShieldCheck className="w-3.5 h-3.5" style={{ color: '#6366f1' }} />
+          <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: '#4f46e5' }}>
             {user?.role || 'Guest'}
           </span>
         </div>
@@ -200,7 +200,7 @@ className="pressable hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg 
           style={{
             background: 'rgba(239,68,68,0.08)',
             border: '1px solid rgba(239,68,68,0.18)',
-            color: '#f87171',
+            color: '#dc2626',
           }}
           title="Sign Out"
           aria-label="Sign out"

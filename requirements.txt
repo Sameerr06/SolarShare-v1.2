@@ -24,6 +24,9 @@ pandas==2.2.3
 scipy==1.15.1
 scikit-learn==1.6.1
 
+# PDF generation (Phase 4: invoicing)
+reportlab==4.2.5
+
 # Forecasting (Phase 3: Prophet solar PV generation forecasting)
 prophet==1.4.0
 

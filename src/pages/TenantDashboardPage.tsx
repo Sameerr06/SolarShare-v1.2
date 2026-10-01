@@ -62,14 +62,14 @@ export const TenantDashboardPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               MSME Tenant Telemetry
             </h1>
-            <span className="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-mono">
+            <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-mono">
               6 TENANTS ACTIVE
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             Individual tenant load shapes, profile cluster metrics, and Prophet demand projections.
           </p>
         </div>
@@ -83,7 +83,7 @@ export const TenantDashboardPage: React.FC = () => {
               className={`pressable px-2.5 py-1 rounded text-xs font-medium shrink-0 flex items-center gap-1.5 ${
                 selectedTenantId === id
                   ? 'bg-amber-500 text-slate-950 font-semibold'
-                  : 'bg-slate-900 border border-slate-800 text-slate-300 hover:border-amber-500/50'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:border-amber-500/50'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -102,14 +102,14 @@ export const TenantDashboardPage: React.FC = () => {
           value={currentTenantName}
           subtext={`Estate Slot #${selectedTenantId}`}
           icon={Users}
-          iconColor="text-amber-400"
+          iconColor="text-amber-700"
         />
         <StatCard
           title="Centroid Profile"
           value={currentProfile?.series_name || `Series #${selectedTenantId}`}
           subtext={`Cluster ID: ${currentProfile?.cluster_id ?? (selectedTenantId - 1)}`}
           icon={Layers}
-          iconColor="text-emerald-400"
+          iconColor="text-emerald-700"
         />
         <StatCard
           title="Mean Load Demand"
@@ -117,7 +117,7 @@ export const TenantDashboardPage: React.FC = () => {
           unit="kW"
           subtext={`PAR: ${currentProfile?.peak_to_average_ratio.toFixed(2) ?? '1.45'}`}
           icon={Activity}
-          iconColor="text-cyan-400"
+          iconColor="text-cyan-700"
         />
         <StatCard
           title="Forecast Consumption"
@@ -125,7 +125,7 @@ export const TenantDashboardPage: React.FC = () => {
           unit="kWh/day"
           subtext={`Peak: ${forecast?.peak_demand_kw.toFixed(1) ?? '180'} kW`}
           icon={TrendingUp}
-          iconColor="text-violet-400"
+          iconColor="text-violet-600"
           isDemo={forecast ? forecast.is_demo : true}
         />
       </div>
@@ -133,21 +133,21 @@ export const TenantDashboardPage: React.FC = () => {
       {/* 24-Hour Load Forecast Chart & Statistics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Load Forecast Chart */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-amber-700" />
                 24-Hour Load Forecast ({currentTenantName})
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 mt-0.5">
                 Predicted demand with upper and lower confidence intervals.
               </p>
             </div>
             {forecast?.is_demo ? (
               <DemoBadge note="Prophet model simulation" />
             ) : (
-              <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded shrink-0">
+              <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 rounded shrink-0">
                 Prophet Active
               </span>
             )}
@@ -162,7 +162,7 @@ export const TenantDashboardPage: React.FC = () => {
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                 <XAxis
                   dataKey="timestamp"
                   stroke="#64748b"
@@ -171,7 +171,7 @@ export const TenantDashboardPage: React.FC = () => {
                 />
                 <YAxis stroke="#64748b" fontSize={10} unit=" kW" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }}
                 />
                 <Area type="monotone" dataKey="upper_bound_kw" name="Upper Confidence (kW)" stroke="#64748b" strokeDasharray="3 3" fill="none" opacity={0.5} />
                 <Area type="monotone" dataKey="predicted_value_kw" name="Predicted Load (kW)" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorTenant)" />
@@ -182,52 +182,52 @@ export const TenantDashboardPage: React.FC = () => {
         </div>
 
         {/* Historical Profiling Metrics */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-emerald-700" />
               Profile Parameters
             </h3>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-mono text-[10px]">
               DATASET
             </span>
           </div>
 
           {currentProfile ? (
             <div className="space-y-2.5 text-xs">
-              <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800 space-y-0.5">
-                <span className="text-[11px] text-slate-400">Series ID</span>
-                <p className="text-xs font-semibold text-amber-400 font-mono">{currentProfile.series_name}</p>
+              <div className="p-2.5 bg-slate-50/80 rounded border border-slate-200 space-y-0.5">
+                <span className="text-[11px] text-slate-500">Series ID</span>
+                <p className="text-xs font-semibold text-amber-700 font-mono">{currentProfile.series_name}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2 bg-slate-950/80 rounded border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Min Demand</span>
-                  <span className="font-semibold text-slate-200 font-mono">{currentProfile.min_demand_kw} kW</span>
+                <div className="p-2 bg-slate-50/80 rounded border border-slate-200">
+                  <span className="text-slate-500 block text-[10px]">Min Demand</span>
+                  <span className="font-semibold text-slate-800 font-mono">{currentProfile.min_demand_kw} kW</span>
                 </div>
-                <div className="p-2 bg-slate-950/80 rounded border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Max Demand</span>
-                  <span className="font-semibold text-slate-200 font-mono">{currentProfile.max_demand_kw} kW</span>
+                <div className="p-2 bg-slate-50/80 rounded border border-slate-200">
+                  <span className="text-slate-500 block text-[10px]">Max Demand</span>
+                  <span className="font-semibold text-slate-800 font-mono">{currentProfile.max_demand_kw} kW</span>
                 </div>
-                <div className="p-2 bg-slate-950/80 rounded border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">CV Factor</span>
-                  <span className="font-semibold text-slate-200 font-mono">{currentProfile.coefficient_of_variation.toFixed(3)}</span>
+                <div className="p-2 bg-slate-50/80 rounded border border-slate-200">
+                  <span className="text-slate-500 block text-[10px]">CV Factor</span>
+                  <span className="font-semibold text-slate-800 font-mono">{currentProfile.coefficient_of_variation.toFixed(3)}</span>
                 </div>
-                <div className="p-2 bg-slate-950/80 rounded border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">TOU Peak Overlap</span>
-                  <span className="font-semibold text-amber-400 font-mono">{currentProfile.tou_peak_overlap_pct.toFixed(1)}%</span>
+                <div className="p-2 bg-slate-50/80 rounded border border-slate-200">
+                  <span className="text-slate-500 block text-[10px]">TOU Peak Overlap</span>
+                  <span className="font-semibold text-amber-700 font-mono">{currentProfile.tou_peak_overlap_pct.toFixed(1)}%</span>
                 </div>
               </div>
 
-              <div className="p-2.5 bg-slate-950/80 rounded border border-slate-800 space-y-1">
-                <span className="text-slate-400 text-[10px] uppercase font-mono tracking-wider">Profile Archetype Rationale</span>
-                <p className="text-[11px] text-slate-300 leading-normal">
+              <div className="p-2.5 bg-slate-50/80 rounded border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[10px] uppercase font-mono tracking-wider">Profile Archetype Rationale</span>
+                <p className="text-[11px] text-slate-700 leading-normal">
                   {currentProfile.selection_rationale || 'Selected centroid profile for Ward hierarchical clustering.'}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-slate-400">No profile selected.</p>
+            <p className="text-xs text-slate-500">No profile selected.</p>
           )}
         </div>
       </div>

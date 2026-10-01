@@ -6,17 +6,17 @@
 
 @layer base {
   :root {
-    --sidebar-bg: #0b0e1a;
-    --surface-1: #0d1117;
-    --surface-2: #141828;
-    --surface-3: #1a2035;
+    --sidebar-bg: #ffffff;
+    --surface-1: #f1f5f9;
+    --surface-2: #ffffff;
+    --surface-3: #ffffff;
     --accent: #6366f1;
     --accent-glow: rgba(99, 102, 241, 0.25);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #4e5d78;
-    --border: rgba(99, 102, 241, 0.12);
-    --border-subtle: rgba(255,255,255,0.06);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --border: rgba(99, 102, 241, 0.15);
+    --border-subtle: rgba(15, 23, 42, 0.08);
   }
 
   body {
@@ -53,11 +53,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(99, 102, 241, 0.35);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.55);
 }
 
 /* ─── Glass Panels ─── */
@@ -65,7 +65,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
 }
 
 .glass-panel-hover {
@@ -100,7 +100,7 @@
 
 /* ─── Gradient Text ─── */
 .gradient-text {
-  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -114,7 +114,7 @@
 
 /* ─── Progress Track ─── */
 .progress-track {
-  background: rgba(255,255,255,0.06);
+  background: rgba(15, 23, 42, 0.07);
   border-radius: 100px;
   overflow: hidden;
   height: 5px;
@@ -161,7 +161,7 @@
   opacity: 0;
   transition: opacity 0.15s ease;
   z-index: 1000;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
 }
 
 .sidebar-tooltip::before {
@@ -298,7 +298,7 @@
               box-shadow var(--dur-fast) ease;
 }
 .table-interactive tbody tr:hover {
-  background-color: rgba(30, 41, 59, 0.4);
+  background-color: rgba(15, 23, 42, 0.04);
   box-shadow: inset 3px 0 0 var(--accent);
 }
 .table-interactive thead th {

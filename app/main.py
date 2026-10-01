@@ -27,6 +27,7 @@ from app.api.routes_demo import router as demo_router
 from app.api.routes_estate import router as estate_router
 from app.api.routes_forecasting import router as forecasting_router
 from app.api.routes_health import router as health_router
+from app.api.routes_invoices import router as invoices_router
 from app.api.routes_load_profiles import router as load_profiles_router
 from app.api.routes_solar import router as solar_router
 from app.core.config import settings
@@ -93,6 +94,7 @@ app.include_router(forecasting_router, prefix="/api")
 app.include_router(allocation_router, prefix="/api")
 app.include_router(battery_router, prefix="/api")
 app.include_router(billing_router, prefix="/api")
+app.include_router(invoices_router, prefix="/api")
 app.include_router(analytics_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 

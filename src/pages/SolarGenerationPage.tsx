@@ -64,18 +64,18 @@ export const SolarGenerationPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               Solar PV Generation & Irradiance
             </h1>
             {generation.is_demo ? (
               <DemoBadge note={generation.explanatory_note} />
             ) : (
-              <span className="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-mono">
+              <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-mono">
                 NASA POWER DATA
               </span>
             )}
           </div>
-          <p className="text-slate-400 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             500 kW STC Solar Array — Coimbatore MSME Estate (11.0168°N, 76.9558°E).
           </p>
         </div>
@@ -89,7 +89,7 @@ export const SolarGenerationPage: React.FC = () => {
           unit="kW"
           subtext={`STC Rating | PR: ${(pvConfig.performance_ratio * 100).toFixed(0)}%`}
           icon={Sun}
-          iconColor="text-amber-400"
+          iconColor="text-amber-700"
         />
         <StatCard
           title="Peak Generation Output"
@@ -97,7 +97,7 @@ export const SolarGenerationPage: React.FC = () => {
           unit="kW"
           subtext="24h Maximum Output"
           icon={Activity}
-          iconColor="text-emerald-400"
+          iconColor="text-emerald-700"
         />
         <StatCard
           title="Total Daily Production"
@@ -105,24 +105,24 @@ export const SolarGenerationPage: React.FC = () => {
           unit="kWh"
           subtext="24-Hour Solar Energy"
           icon={Zap}
-          iconColor="text-cyan-400"
+          iconColor="text-cyan-700"
         />
         <StatCard
           title="Module Efficiency"
           value={`${(pvConfig.efficiency * 100).toFixed(0)}%`}
           subtext="Monocrystalline PERC"
           icon={Shield}
-          iconColor="text-violet-400"
+          iconColor="text-violet-600"
         />
       </div>
 
       {/* 24-Hour Generation Curve & Solar Spec Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Main Generation Chart */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Sun className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Sun className="w-4 h-4 text-amber-700" />
               24-Hour Solar Generation Profile (kW)
             </h3>
             {generation.is_demo && <DemoBadge size="sm" note="Illustrative bell curve" />}
@@ -137,10 +137,10 @@ export const SolarGenerationPage: React.FC = () => {
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                 <XAxis dataKey="time" stroke="#64748b" fontSize={10} />
                 <YAxis stroke="#64748b" fontSize={10} unit=" kW" />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }} />
                 <Area type="monotone" dataKey="power" name="PV Output (kW)" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorPv)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -148,39 +148,39 @@ export const SolarGenerationPage: React.FC = () => {
         </div>
 
         {/* PV Specs Side Panel */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Compass className="w-4 h-4 text-amber-400" />
+        <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+            <Compass className="w-4 h-4 text-amber-700" />
             PV Array Configuration
           </h3>
 
           <div className="space-y-2.5 text-xs">
-            <div className="p-2.5 bg-slate-950 border border-slate-800 rounded space-y-0.5">
-              <span className="text-slate-400 text-[10px]">Array Orientation</span>
-              <p className="text-xs font-semibold text-white">South Facing (Azimuth 180°)</p>
-              <p className="text-[10px] text-slate-400">Optimal Tilt Angle: 11.0°</p>
+            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded space-y-0.5">
+              <span className="text-slate-500 text-[10px]">Array Orientation</span>
+              <p className="text-xs font-semibold text-slate-900">South Facing (Azimuth 180°)</p>
+              <p className="text-[10px] text-slate-500">Optimal Tilt Angle: 11.0°</p>
             </div>
 
-            <div className="p-2.5 bg-slate-950 border border-slate-800 rounded space-y-1.5 font-mono text-[11px]">
+            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded space-y-1.5 font-mono text-[11px]">
               <div className="flex justify-between">
-                <span className="text-slate-400">STC Rated Capacity:</span>
-                <span className="text-amber-400 font-semibold">500.0 kW</span>
+                <span className="text-slate-500">STC Rated Capacity:</span>
+                <span className="text-amber-700 font-semibold">500.0 kW</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Performance Ratio:</span>
-                <span className="text-emerald-400 font-semibold">0.80 (80%)</span>
+                <span className="text-slate-500">Performance Ratio:</span>
+                <span className="text-emerald-700 font-semibold">0.80 (80%)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Cell Temp Range:</span>
-                <span className="text-slate-200">25.0°C - 40.0°C</span>
+                <span className="text-slate-500">Cell Temp Range:</span>
+                <span className="text-slate-800">25.0°C - 40.0°C</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Inverter Efficiency:</span>
-                <span className="text-slate-200">98.5%</span>
+                <span className="text-slate-500">Inverter Efficiency:</span>
+                <span className="text-slate-800">98.5%</span>
               </div>
             </div>
 
-            <div className="p-2.5 bg-slate-950 border border-slate-800 rounded text-[11px] text-slate-400">
+            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-500">
               {pvConfig.notes || 'PV array configuration parameters for Coimbatore MSME Industrial Estate.'}
             </div>
           </div>

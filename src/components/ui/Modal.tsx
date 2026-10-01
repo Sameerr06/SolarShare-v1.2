@@ -62,7 +62,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+      className="overlay-in fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md"
       style={{ opacity: closing ? 0 : 1, transition: 'opacity 180ms ease' }}
       onClick={onClose}
       role="presentation"
@@ -70,7 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`panel-in w-full ${maxWidthClasses[maxWidth]} glass-panel bg-slate-900 border-slate-700 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden outline-none`}
+        className={`panel-in w-full ${maxWidthClasses[maxWidth]} glass-panel bg-white border-slate-300 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden outline-none`}
         style={{
           opacity: closing ? 0 : 1,
           transform: closing ? 'translateY(12px) scale(0.97)' : 'translateY(0) scale(1)',
@@ -82,14 +82,14 @@ export const Modal: React.FC<ModalProps> = ({
         aria-label={title}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 shrink-0">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white/90 shrink-0">
           <div>
-            <h3 className="text-lg font-bold text-white tracking-tight">{title}</h3>
-            {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight">{title}</h3>
+            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
           <button
             onClick={onClose}
-            className="pressable p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="pressable p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />

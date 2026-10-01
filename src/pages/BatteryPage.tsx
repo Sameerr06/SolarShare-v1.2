@@ -61,12 +61,12 @@ export const BatteryPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               Battery Storage (BESS)
             </h1>
             <DemoBadge label="SIMULATED" size="sm" note={bStatus.explanatory_note} />
           </div>
-          <p className="text-slate-400 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             200 kWh Lithium Iron Phosphate (LFP) BESS Telemetry & State-of-Charge loop.
           </p>
         </div>
@@ -81,7 +81,7 @@ export const BatteryPage: React.FC = () => {
           value={`${bStatus.current_soc_pct}%`}
           subtext={`${bStatus.current_stored_kwh} / ${bStatus.capacity_kwh} kWh`}
           icon={BatteryCharging}
-          iconColor="text-emerald-400"
+          iconColor="text-emerald-700"
           isDemo={true}
         />
         <StatCard
@@ -89,7 +89,7 @@ export const BatteryPage: React.FC = () => {
           value={`${bStatus.current_power_kw} kW`}
           subtext={`Mode: ${bStatus.operation_mode}`}
           icon={Zap}
-          iconColor="text-amber-400"
+          iconColor="text-amber-700"
           isDemo={true}
         />
         <StatCard
@@ -97,7 +97,7 @@ export const BatteryPage: React.FC = () => {
           value={`${bStatus.health_soh_pct}%`}
           subtext="LFP Cell Degradation Normal"
           icon={ShieldCheck}
-          iconColor="text-cyan-400"
+          iconColor="text-cyan-700"
           isDemo={true}
         />
         <StatCard
@@ -105,7 +105,7 @@ export const BatteryPage: React.FC = () => {
           value={`${(bConfig.round_trip_efficiency * 100).toFixed(0)}%`}
           subtext={`Max Charge: ${bConfig.max_charge_kw} kW`}
           icon={Cpu}
-          iconColor="text-violet-400"
+          iconColor="text-violet-600"
           isDemo={true}
         />
       </div>
@@ -113,27 +113,27 @@ export const BatteryPage: React.FC = () => {
       {/* Main SOC & Battery Status Visualizer */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* SOC Visual Gauge */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-col justify-between space-y-4">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Battery className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between space-y-4">
+          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+            <Battery className="w-4 h-4 text-emerald-700" />
             BESS Storage Status
           </h3>
 
           <div className="flex flex-col items-center justify-center p-4 space-y-3">
-            <div className="w-32 h-32 flex items-center justify-center rounded-full bg-slate-950 border-2 border-slate-800">
+            <div className="w-32 h-32 flex items-center justify-center rounded-full bg-slate-50 border-2 border-slate-200">
               <div className="text-center space-y-0.5">
-                <span className="text-2xl font-bold font-mono text-emerald-400">{bStatus.current_soc_pct}%</span>
-                <span className="text-[10px] text-slate-400 font-mono block uppercase">State of Charge</span>
+                <span className="text-2xl font-bold font-mono text-emerald-700">{bStatus.current_soc_pct}%</span>
+                <span className="text-[10px] text-slate-500 font-mono block uppercase">State of Charge</span>
               </div>
             </div>
 
             <div className="w-full space-y-1.5">
-              <div className="flex justify-between text-xs text-slate-400 font-mono text-[11px]">
+              <div className="flex justify-between text-xs text-slate-500 font-mono text-[11px]">
                 <span>Min ({bConfig.min_soc_pct}%)</span>
-                <span className="text-white font-semibold">{bStatus.current_stored_kwh} kWh</span>
+                <span className="text-slate-900 font-semibold">{bStatus.current_stored_kwh} kWh</span>
                 <span>Max ({bConfig.max_soc_pct}%)</span>
               </div>
-              <div className="w-full bg-slate-950 border border-slate-800 h-2.5 rounded-full overflow-hidden p-0.5">
+              <div className="w-full bg-slate-50 border border-slate-200 h-2.5 rounded-full overflow-hidden p-0.5">
                 <div
                   className="bg-emerald-500 h-full rounded-full transition-all duration-300"
                   style={{ width: `${bStatus.current_soc_pct}%` }}
@@ -142,23 +142,23 @@ export const BatteryPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-2.5 bg-slate-950 border border-slate-800 rounded text-xs font-mono space-y-1 text-[11px]">
-            <div className="flex justify-between text-slate-400">
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-xs font-mono space-y-1 text-[11px]">
+            <div className="flex justify-between text-slate-500">
               <span>Operation Mode:</span>
-              <span className="text-emerald-400 font-semibold">{bStatus.operation_mode}</span>
+              <span className="text-emerald-700 font-semibold">{bStatus.operation_mode}</span>
             </div>
-            <div className="flex justify-between text-slate-400">
+            <div className="flex justify-between text-slate-500">
               <span>Current Power:</span>
-              <span className="text-amber-400 font-semibold">{bStatus.current_power_kw} kW</span>
+              <span className="text-amber-700 font-semibold">{bStatus.current_power_kw} kW</span>
             </div>
           </div>
         </div>
 
         {/* 24-Hour Battery Schedule Simulation Chart */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Activity className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-amber-700" />
               24-Hour Battery SOC Curve (Simulation)
             </h3>
             <DemoBadge note="Battery schedule simulation" />
@@ -173,10 +173,10 @@ export const BatteryPage: React.FC = () => {
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.8} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.8} />
                 <XAxis dataKey="hour" stroke="#64748b" fontSize={10} />
                 <YAxis stroke="#64748b" fontSize={10} unit="%" />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.375rem', fontSize: '11px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '0.375rem', fontSize: '11px' }} />
                 <Area type="monotone" dataKey="soc" name="State of Charge (%)" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#socGrad)" />
               </AreaChart>
             </ResponsiveContainer>

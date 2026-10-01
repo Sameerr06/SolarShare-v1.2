@@ -265,6 +265,41 @@ export interface BillingSummaryResponse {
   explanatory_note?: string;
 }
 
+export interface InvoiceLineRead {
+  id: number;
+  description: string;
+  category: string;
+  quantity_kwh: number;
+  rate_inr_per_kwh: number;
+  amount_inr: number;
+}
+
+export interface InvoiceRead {
+  id: number;
+  invoice_number: string;
+  tenant_id: number;
+  tenant_name?: string | null;
+  billing_period: string;
+  issue_date: string;
+  due_date: string;
+  status: string;
+  total_consumption_kwh: number;
+  solar_consumed_kwh: number;
+  grid_consumed_kwh: number;
+  solar_cost_inr: number;
+  grid_cost_inr: number;
+  total_bill_inr: number;
+  savings_inr: number;
+  line_items: InvoiceLineRead[];
+  pdf_url?: string | null;
+}
+
+export interface InvoiceListResponse {
+  billing_period: string;
+  invoices: InvoiceRead[];
+  count: number;
+}
+
 export interface AnalyticsOverviewResponse {
   total_public_series: number;
   total_observations: number;

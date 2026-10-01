@@ -21,9 +21,9 @@ export default {
           900: '#78350f',
         },
         surface: {
-          1: '#0d1117',
-          2: '#141828',
-          3: '#1a2035',
+          1: '#f1f5f9',
+          2: '#ffffff',
+          3: '#f8fafc',
         },
         accent: {
           DEFAULT: '#6366f1',
