@@ -1,0 +1,29 @@
+# Auto-generated requirements for Python 3.14 compatibility
+# Uses relaxed pins for scientific packages that now have Python 3.14 wheels.
+# The original requirements.txt pins are kept for Docker (Python 3.11).
+
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+pydantic>=2.10.4
+pydantic-settings>=2.7.1
+email-validator==2.2.0
+SQLAlchemy>=2.1.0  # 2.0.x has typing.Union incompatibility with Python 3.14
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-multipart==0.0.20
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.3.4
+pytest-cov==6.0.0
+httpx==0.28.1
+
+# Scientific stack — relaxed pins for Python 3.14 binary wheel availability
+numpy>=2.2.1
+pandas>=2.2.3
+scipy>=1.15.1
+scikit-learn>=1.6.1
+
+# Prophet — install separately after above
+prophet>=1.4.0

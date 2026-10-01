@@ -1,0 +1,83 @@
+# ============================================================
+# SolarShare — Docker Compose (full stack)
+# ============================================================
+# Usage:
+#   docker compose up --build          # build + start all services
+#   docker compose up -d               # detached mode
+#   docker compose logs -f backend     # stream backend logs
+#   docker compose down -v             # stop + remove volumes
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # FastAPI Backend
+  # ----------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: solarshare-backend:latest
+    container_name: solarshare-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override DATABASE_URL to use the named volume path
+      DATABASE_URL: sqlite:////app/db_data/solarshare.db
+      # Point ingestion at the mounted dataset (POSIX path inside the container)
+      ELECTRICITY_DATASET_LOCAL_PATH: /app/data/electricity_hourly_dataset.tsf
+    volumes:
+      # Persist the SQLite database outside the container
+      - db_data:/app/db_data
+      # Mount the Zenodo .tsf read-only instead of baking it into the image.
+      # Delete this line (and the empty ./data dir) if you never ingest locally.
+      - ./data:/app/data:ro
+    ports:
+      # Expose FastAPI directly for dev / testing (optional).
+      # Comment this out to reach the API only via the frontend's nginx proxy.
+      - "8000:8000"
+    networks:
+      - solarshare-net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ----------------------------------------------------------
+  # React Frontend (Nginx)
+  # ----------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: solarshare-frontend:latest
+    container_name: solarshare-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - solarshare-net
+    security_opt:
+      - no-new-privileges:true
+
+# ----------------------------------------------------------
+# Volumes & Networks
+# ----------------------------------------------------------
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  solarshare-net:
+    driver: bridge

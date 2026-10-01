@@ -1,0 +1,59 @@
+# Python cache & build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Node / frontend build artifacts
+node_modules/
+dist/
+.next/
+out/
+
+# SQLite database (mounted via volume at runtime)
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / secrets — never bake these into images
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# IDE & OS noise
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Test coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# Logs
+*.log
+logs/
+
+# Docker files themselves (no need to COPY into image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore

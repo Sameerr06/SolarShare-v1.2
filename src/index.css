@@ -1,0 +1,389 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sidebar-bg: #0b0e1a;
+    --surface-1: #0d1117;
+    --surface-2: #141828;
+    --surface-3: #1a2035;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.25);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #4e5d78;
+    --border: rgba(99, 102, 241, 0.12);
+    --border-subtle: rgba(255,255,255,0.06);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--surface-1);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(129, 140, 248, 0.7);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* ─── Custom Scrollbars ─── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+/* ─── Glass Panels ─── */
+.glass-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.glass-panel-hover {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 32px rgba(99, 102, 241, 0.08);
+}
+
+.panel-solid {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+/* ─── Stat Card ─── */
+.stat-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.25rem;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+}
+
+/* ─── Gradient Text ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section Divider ─── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.15), transparent);
+}
+
+/* ─── Progress Track ─── */
+.progress-track {
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  overflow: hidden;
+  height: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.5s ease;
+}
+
+/* ─── Nav Active Pill ─── */
+.nav-active-pill {
+  background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(139,92,246,0.12) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.15);
+}
+
+/* ─── Status Dot Pulse Animation ─── */
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.ping-slow {
+  animation: ping-slow 2s infinite;
+}
+
+/* ─── Sidebar Tooltip (collapsed mode) ─── */
+.sidebar-tooltip {
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-3);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: var(--text-primary);
+  padding: 0.3rem 0.7rem;
+  border-radius: 7px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.sidebar-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: var(--surface-3);
+}
+
+.sidebar-nav-item:hover .sidebar-tooltip {
+  opacity: 1;
+}
+
+/* ─── Page Enter Animation ─── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: fadeSlideUp 0.3s ease forwards;
+}
+
+/* ─── Button Variants ─── */
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+}
+
+/* ─── Motion tokens ─── */
+:root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+}
+
+/* ─── Pressable feedback (works on any button/link) ─── */
+.pressable {
+  transition: transform var(--dur-fast) var(--ease-out-soft),
+              opacity var(--dur-base) ease,
+              background-color var(--dur-base) ease,
+              border-color var(--dur-base) ease,
+              color var(--dur-base) ease,
+              box-shadow var(--dur-base) ease;
+  will-change: transform;
+}
+.pressable:active {
+  transform: scale(0.96);
+}
+
+/* ─── Icon hover pop ─── */
+.icon-pop {
+  transition: transform var(--dur-base) var(--ease-out-soft),
+              color var(--dur-base) ease;
+}
+.group:hover .icon-pop {
+  transform: scale(1.12);
+}
+
+/* ─── Skeleton pulse (loading dots, status placeholders) ─── */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+.skeleton-pulse {
+  animation: pulse-soft 1.8s ease-in-out infinite;
+}
+
+/* ─── Fade + slide variants ─── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in {
+  animation: fadeIn var(--dur-base) ease forwards;
+}
+
+@keyframes fadeSlideRight {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.fade-slide-right {
+  animation: fadeSlideRight var(--dur-slow) var(--ease-out-soft) forwards;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.scale-in {
+  animation: scaleIn var(--dur-base) var(--ease-out-soft) forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-down {
+  animation: slideDown var(--dur-base) var(--ease-out-soft) forwards;
+}
+
+/* ─── Staggered children entrance ─── */
+.stagger-children > * {
+  animation: fadeSlideUp 0.42s var(--ease-out-soft) both;
+}
+.stagger-children > *:nth-child(1)  { animation-delay: 0.02s; }
+.stagger-children > *:nth-child(2)  { animation-delay: 0.06s; }
+.stagger-children > *:nth-child(3)  { animation-delay: 0.10s; }
+.stagger-children > *:nth-child(4)  { animation-delay: 0.14s; }
+.stagger-children > *:nth-child(5)  { animation-delay: 0.18s; }
+.stagger-children > *:nth-child(6)  { animation-delay: 0.22s; }
+.stagger-children > *:nth-child(7)  { animation-delay: 0.26s; }
+.stagger-children > *:nth-child(8)  { animation-delay: 0.30s; }
+.stagger-children > *:nth-child(n+9) { animation-delay: 0.34s; }
+
+/* ─── Interactive table rows ─── */
+.table-interactive tbody tr {
+  transition: background-color var(--dur-fast) ease,
+              box-shadow var(--dur-fast) ease;
+}
+.table-interactive tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.4);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.table-interactive thead th {
+  transition: color var(--dur-base) ease;
+}
+
+/* ─── Modal / overlay enter ─── */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.overlay-in {
+  animation: overlayIn var(--dur-base) ease forwards;
+}
+.panel-in {
+  animation: panelIn var(--dur-slow) var(--ease-out-soft) forwards;
+}
+
+/* ─── Tooltip fade ─── */
+.tooltip-fade {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--dur-base) ease, transform var(--dur-base) var(--ease-out-soft);
+  pointer-events: none;
+}
+.group:hover .tooltip-fade,
+.group:focus-within .tooltip-fade {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Smooth number/value swap ─── */
+.value-swap {
+  transition: opacity var(--dur-base) ease;
+}
+
+/* ─── Nav item hover glow ─── */
+.nav-item-glow {
+  transition: background-color var(--dur-base) ease,
+              box-shadow var(--dur-base) ease,
+              color var(--dur-base) ease;
+}
+.nav-item-glow:hover {
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.18);
+}
+
+/* ─── Animated status dot ─── */
+@keyframes dot-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(52, 211, 153, 0); }
+}
+.dot-breathe {
+  animation: dot-breathe 2.4s ease-in-out infinite;
+}
+
+/* ─── Recharts smoothing ─── */
+.recharts-wrapper,
+.recharts-surface {
+  transition: opacity var(--dur-base) ease;
+}
+.recharts-cartesian-axis-tick-value {
+  transition: fill var(--dur-base) ease;
+}
+
+/* ─── Reduced motion: collapse everything ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pressable:active {
+    transform: none;
+  }
+  .stagger-children > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+

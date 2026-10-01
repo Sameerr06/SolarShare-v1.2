@@ -1,0 +1,14 @@
+# SYNTHETIC TEST FIXTURE -- NOT REAL DATASET CONTENT.
+# Small fixture exercising missing-value ('?') handling, per the Monash
+# .tsf format's documented missing-value marker. Structurally hourly,
+# consistent with the real electricity_hourly_dataset.tsf metadata.
+@relation electricity_hourly_missing_fixture
+@attribute series_name string
+@attribute start_timestamp date
+@frequency hourly
+@horizon 24
+@missing true
+@equallength true
+@data
+T1:2012-01-01 00-00-00:10.5,?,12.3,0.0,15.7,?
+T2:2012-01-01 00-00-00:20.1,21.4,?,19.8,18.2,17.5

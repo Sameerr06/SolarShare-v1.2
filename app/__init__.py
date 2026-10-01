@@ -1,0 +1,1 @@
+"""SolarShare backend application package."""
