@@ -7,9 +7,7 @@ import shutil
 import tempfile
 from datetime import datetime, timedelta, timezone
 import pytest
-from fastapi.testclient import TestClient
 
-from app.main import app
 from app.models.tenant import Tenant
 from app.models.public_load import PublicLoadSeries, PublicLoadObservation
 from app.schemas.forecasting import TenantForecastResponse
@@ -22,9 +20,6 @@ from app.services.tenant_forecasting import (
     load_model_from_cache,
     save_model_to_cache,
 )
-
-# Use TestClient for endpoint integration tests
-client = TestClient(app)
 
 
 def _seed_historical_tenant_data(db_session, tenant_id: int = 1, series_name: str = "T258", hours_count: int = 48):
@@ -160,12 +155,12 @@ def test_generate_tenant_forecast_output(db_session):
             tenant_forecasting.MODELS_DIR = original_models_dir
 
 
-def test_tenant_forecasting_api_endpoint(db_session):
+def test_tenant_forecasting_api_endpoint(client, db_session):
     """Integration test: Verify the GET forecasting/tenants/{tenant_id} endpoint returns 200."""
     _seed_historical_tenant_data(db_session, tenant_id=1, series_name="T258", hours_count=36)
-    
-    # Override get_db dependency in FastAPI to point to our test database session
-    # conftest should handle this, but let's test using client
+
+    # The `client` fixture points the API at the in-memory test database that
+    # was just seeded, instead of the real `solarshare.db` file.
     response = client.get("/api/forecasting/tenants/1?hours=12")
     assert response.status_code == 200
     
