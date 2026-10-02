@@ -165,10 +165,12 @@ def test_solar_forecast_provenance_and_real_status(db_session):
     assert "Prophet solar PV generation forecast" in response.explanatory_note
 
 
-def test_get_solar_forecast_api_endpoint(client, db_session):
+def test_get_solar_forecast_api_endpoint(client, db_session, admin_auth):
     _seed_historical_solar_data(db_session, estate_id=1, days=3)
 
-    res = client.get("/api/forecasting/solar?estate_id=1&hours=24")
+    assert client.get("/api/forecasting/solar?estate_id=1&hours=24").status_code == 401
+
+    res = client.get("/api/forecasting/solar?estate_id=1&hours=24", headers=admin_auth)
     assert res.status_code == 200
 
     payload = res.json()

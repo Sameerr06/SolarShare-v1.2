@@ -85,11 +85,24 @@ def get_monthly_billing_summary(
     db: Session,
     month: str,
     tenant_id: Optional[int] = None,
+    *,
+    strict_tenant_filter: bool = False,
+    tenant_name: Optional[str] = None,
 ) -> BillingSummaryResponse:
     """
     Return the billing summary for a given month, optionally filtered to one tenant.
     This is the single source of truth for billing numbers used by both the
     summary endpoint and the invoice generator.
+
+    `strict_tenant_filter` is what keeps a tenant-scoped request honest. The demo
+    rows are keyed by the seed's tenant ids, so a caller whose `tenant_id` does
+    not appear in `DEMO_TENANTS` used to silently receive the *whole estate's*
+    numbers instead of their own — a cross-tenant leak dressed up as a fallback.
+    Callers acting on a single tenant must pass `strict_tenant_filter=True`, in
+    which case an unmatched id yields an empty summary rather than everything.
+
+    `tenant_name` lets a caller whose id is absent from `DEMO_TENANTS` still get
+    the row that belongs to them, matched on the seeded tenant name.
     """
     # Validate month format
     if not _valid_month(month):
@@ -99,7 +112,13 @@ def get_monthly_billing_summary(
 
     if tenant_id is not None:
         filtered = [t for t in tenants_demo if t.tenant_id == tenant_id]
-        if filtered:
+        if not filtered and tenant_name:
+            filtered = [
+                BillingTenantSummary(**{**t.model_dump(), "tenant_id": tenant_id})
+                for t in tenants_demo
+                if t.tenant_name == tenant_name
+            ]
+        if filtered or strict_tenant_filter:
             tenants_demo = filtered
 
     total_consumption = sum(t.total_consumption_kwh for t in tenants_demo)

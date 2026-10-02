@@ -57,7 +57,14 @@ def seed() -> None:
     init_db()
     db = SessionLocal()
     try:
-        estate = db.query(Estate).filter(Estate.name == "Coimbatore Demo Estate").first()
+        # Reuse the estate the API already treats as active (lowest id — see
+        # GET /api/estates/active) instead of matching on a hardcoded name.
+        # Matching by name created a *second* estate on any database that already
+        # had one, which split the demo in half: the seeded TENANT users pointed
+        # at tenants of the new estate while every ingested series, PV config and
+        # invoice stayed on the original — so a demo login saw an empty dashboard
+        # and an estate split that belonged to nobody.
+        estate = db.query(Estate).order_by(Estate.id).first()
         if estate is None:
             estate = Estate(name="Coimbatore Demo Estate", latitude=11.0168, longitude=76.9558)
             db.add(estate)
@@ -65,7 +72,7 @@ def seed() -> None:
             db.refresh(estate)
             logger.info("Created estate id=%s", estate.id)
         else:
-            logger.info("Estate already exists id=%s", estate.id)
+            logger.info("Estate already exists id=%s name=%s", estate.id, estate.name)
 
         tenants_to_seed = [
             ("Textile Manufacturing Unit", TenantProfileType.TEXTILE_MANUFACTURING, "T258"),

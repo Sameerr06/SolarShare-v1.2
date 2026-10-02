@@ -75,17 +75,27 @@ def _to_read(db: Session, invoice, tenant_name: Optional[str] = None) -> Invoice
 @router.get("", response_model=InvoiceListResponse)
 def list_invoices(
     month: str = Query("2026-08", pattern=MONTH_PATTERN, description="Billing period YYYY-MM"),
+    tenant_id: Optional[int] = Query(
+        None,
+        description="Optional tenant_id filter. ADMIN may filter; a TENANT may only pass their own id.",
+    ),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> InvoiceListResponse:
-    """List invoices for a month. ADMIN sees all; TENANT sees only their own."""
-    tenant_id: Optional[int] = None
+    """
+    List invoices for a month. ADMIN sees all (optionally filtered by `tenant_id`);
+    TENANT sees only their own, and asking for anyone else's id is a 403 rather
+    than a silently ignored filter.
+    """
+    effective_tenant_id: Optional[int] = tenant_id
     if current_user.role == UserRole.TENANT:
         if current_user.tenant_id is None:
             raise HTTPException(status_code=400, detail="User has no tenant assigned.")
-        tenant_id = current_user.tenant_id
+        if tenant_id is not None:
+            verify_tenant_access(tenant_id, current_user)
+        effective_tenant_id = current_user.tenant_id
 
-    invoices = get_invoices_for_month(db, month, tenant_id)
+    invoices = get_invoices_for_month(db, month, effective_tenant_id)
     return InvoiceListResponse(
         billing_period=month,
         invoices=[_to_read(db, inv) for inv in invoices],

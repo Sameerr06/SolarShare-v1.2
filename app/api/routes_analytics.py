@@ -7,7 +7,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
+from app.api.deps import require_role
 from app.db.session import get_db
+from app.models.enums import UserRole
 from app.models.load_profile import PublicLoadSeriesProfile
 from app.models.public_load import PublicLoadObservation, PublicLoadSeries
 from app.schemas.analytics import AnalyticsOverviewResponse, SelectedProfileSummaryItem
@@ -17,7 +19,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 
-@router.get("/overview", response_model=AnalyticsOverviewResponse)
+@router.get(
+    "/overview",
+    response_model=AnalyticsOverviewResponse,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverviewResponse:
     total_series = db.query(PublicLoadSeries).count()
     total_obs = db.query(PublicLoadObservation).count()

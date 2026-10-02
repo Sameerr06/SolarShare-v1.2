@@ -53,25 +53,6 @@ def get_current_user(
     return user
 
 
-def get_optional_current_user(
-    token: Optional[str] = Depends(oauth2_scheme_optional),
-    db: Session = Depends(get_db),
-) -> Optional[User]:
-    if not token:
-        return None
-    try:
-        payload = decode_access_token(token)
-        user_id_raw = payload.get("sub")
-        if user_id_raw is None:
-            return None
-        user = db.get(User, int(user_id_raw))
-        if user is not None and user.is_active:
-            return user
-    except Exception:
-        pass
-    return None
-
-
 def verify_tenant_access(target_tenant_id: int, current_user: Optional[User]) -> None:
     """
     Enforces tenant isolation.

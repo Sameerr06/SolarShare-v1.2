@@ -7,8 +7,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user, require_role
 from app.db.session import get_db
 from app.models.config import BatteryConfig
+from app.models.enums import UserRole
 from app.schemas.battery import BatteryConfigRead, BatteryStatusResponse
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/battery", tags=["battery"])
 
 
-@router.get("/config", response_model=BatteryConfigRead)
+@router.get(
+    "/config",
+    response_model=BatteryConfigRead,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def get_battery_config(
     estate_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
@@ -52,7 +58,11 @@ def get_battery_config(
     )
 
 
-@router.get("/status", response_model=BatteryStatusResponse)
+@router.get(
+    "/status",
+    response_model=BatteryStatusResponse,
+    dependencies=[Depends(get_current_user)],
+)
 def get_battery_status(
     estate_id: int = Query(1, ge=1),
     db: Session = Depends(get_db),

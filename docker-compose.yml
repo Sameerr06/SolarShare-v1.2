@@ -34,9 +34,12 @@ services:
       # Delete this line (and the empty ./data dir) if you never ingest locally.
       - ./data:/app/data:ro
     ports:
-      # Expose FastAPI directly for dev / testing (optional).
-      # Comment this out to reach the API only via the frontend's nginx proxy.
-      - "8000:8000"
+      # Publish the API on the HOST LOOPBACK ONLY. That keeps
+      # http://localhost:8000/docs working for local debugging while making the
+      # API unreachable from the internet — browsers go through the frontend's
+      # nginx, which is the only service that needs to be public.
+      # Use "8000:8000" instead if you deliberately want to expose the API.
+      - "127.0.0.1:8000:8000"
     networks:
       - solarshare-net
     security_opt:

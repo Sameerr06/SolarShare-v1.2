@@ -125,8 +125,9 @@ def _install_fake_nasa(monkeypatch, ghi=800.0, missing_every=None):
 # ─── presets ───────────────────────────────────────────────
 
 
-def test_presets_are_listed_without_auth(client):
-    resp = client.get("/api/estates/presets")
+def test_presets_are_listed_for_authenticated_users(client, admin_auth):
+    assert client.get("/api/estates/presets").status_code == 401
+    resp = client.get("/api/estates/presets", headers=admin_auth)
     assert resp.status_code == 200, resp.text
     presets = resp.json()
     assert len(presets) == len(PRESET_ESTATES)
@@ -135,8 +136,8 @@ def test_presets_are_listed_without_auth(client):
     assert coimbatore["longitude"] == pytest.approx(76.9558)
 
 
-def test_all_presets_have_valid_coordinate_ranges(client):
-    for preset in client.get("/api/estates/presets").json():
+def test_all_presets_have_valid_coordinate_ranges(client, admin_auth):
+    for preset in client.get("/api/estates/presets", headers=admin_auth).json():
         assert -90.0 <= preset["latitude"] <= 90.0
         assert -180.0 <= preset["longitude"] <= 180.0
         assert preset["timezone"]
@@ -145,8 +146,8 @@ def test_all_presets_have_valid_coordinate_ranges(client):
 # ─── CRUD ──────────────────────────────────────────────────
 
 
-def test_list_estates_empty(client, db_session):
-    assert client.get("/api/estates").json() == []
+def test_list_estates_empty(client, db_session, admin_auth):
+    assert client.get("/api/estates", headers=admin_auth).json() == []
 
 
 def test_create_and_read_estate(client, db_session):
@@ -167,7 +168,7 @@ def test_create_and_read_estate(client, db_session):
     assert created["latitude"] == pytest.approx(13.0067)
     assert created["weather_observation_count"] == 0
 
-    fetched = client.get(f"/api/estates/{created['id']}")
+    fetched = client.get(f"/api/estates/{created['id']}", headers=_auth(token))
     assert fetched.status_code == 200
     assert fetched.json()["longitude"] == pytest.approx(80.2206)
 
@@ -182,21 +183,21 @@ def test_create_estate_rejects_out_of_range_coordinates(client):
     assert resp.status_code == 422, resp.text
 
 
-def test_active_estate_returns_lowest_id(client, db_session):
+def test_active_estate_returns_lowest_id(client, db_session, admin_auth):
     first = _make_estate(db_session, name="First", lat=11.0, lon=76.0)
     _make_estate(db_session, name="Second", lat=13.0, lon=80.0)
 
-    resp = client.get("/api/estates/active")
+    resp = client.get("/api/estates/active", headers=admin_auth)
     assert resp.status_code == 200, resp.text
     assert resp.json()["id"] == first.id
 
 
-def test_active_estate_404s_when_none_configured(client, db_session):
-    assert client.get("/api/estates/active").status_code == 404
+def test_active_estate_404s_when_none_configured(client, db_session, admin_auth):
+    assert client.get("/api/estates/active", headers=admin_auth).status_code == 404
 
 
-def test_estate_not_found(client, db_session):
-    assert client.get("/api/estates/9999").status_code == 404
+def test_estate_not_found(client, db_session, admin_auth):
+    assert client.get("/api/estates/9999", headers=admin_auth).status_code == 404
 
 
 # ─── authorization ─────────────────────────────────────────

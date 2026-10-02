@@ -7,7 +7,9 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user, require_role
 from app.db.session import get_db
+from app.models.enums import UserRole
 from app.models.load_profile import PublicLoadSeriesProfile
 from app.models.public_load import PublicLoadSeries
 from app.schemas.load_profiles import LoadProfileRead, LoadProfilesListResponse
@@ -57,7 +59,11 @@ def _to_profile_read(profile: PublicLoadSeriesProfile, series_name: Optional[str
     )
 
 
-@router.get("", response_model=LoadProfilesListResponse)
+@router.get(
+    "",
+    response_model=LoadProfilesListResponse,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def list_load_profiles(
     selected_only: bool = Query(False, description="If True, return only the 6 selected profiles"),
     limit: int = Query(100, ge=1, le=500),
@@ -88,7 +94,11 @@ def list_load_profiles(
     )
 
 
-@router.get("/selected", response_model=List[LoadProfileRead])
+@router.get(
+    "/selected",
+    response_model=List[LoadProfileRead],
+    dependencies=[Depends(get_current_user)],
+)
 def get_selected_profiles(db: Session = Depends(get_db)) -> List[LoadProfileRead]:
     results = (
         db.query(PublicLoadSeriesProfile, PublicLoadSeries.series_name)
@@ -101,7 +111,11 @@ def get_selected_profiles(db: Session = Depends(get_db)) -> List[LoadProfileRead
     return [_to_profile_read(prof, name) for prof, name in results]
 
 
-@router.get("/{series_identifier}", response_model=LoadProfileRead)
+@router.get(
+    "/{series_identifier}",
+    response_model=LoadProfileRead,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def get_load_profile_by_id_or_name(
     series_identifier: str,
     db: Session = Depends(get_db),

@@ -1,5 +1,7 @@
-# SolarShare Backend — Phase 1 dependencies
-# Later phases will add: prophet, pulp, pandas, numpy, reportlab, httpx (NASA POWER client), etc.
+# SolarShare Backend — pinned production/Docker dependencies.
+# CI runs this file on Python 3.10, 3.11 and 3.12 (see
+# .github/workflows/python-package.yml). requirements-dev.txt holds the looser
+# pins used for local development on newer interpreters.
 
 fastapi==0.115.6
 uvicorn[standard]==0.34.0

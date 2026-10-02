@@ -6,7 +6,9 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.api.deps import require_role
 from app.db.session import get_db
+from app.models.enums import UserRole
 from app.models.load_profile import PublicLoadSeriesProfile
 from app.models.public_load import PublicLoadObservation, PublicLoadSeries
 from app.schemas.dashboard import DashboardOverviewResponse
@@ -16,7 +18,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
-@router.get("/overview", response_model=DashboardOverviewResponse)
+@router.get(
+    "/overview",
+    response_model=DashboardOverviewResponse,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def get_dashboard_overview(db: Session = Depends(get_db)) -> DashboardOverviewResponse:
     # 1. Dataset metrics (REAL)
     total_series = db.query(PublicLoadSeries).count()

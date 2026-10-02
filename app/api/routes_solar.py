@@ -7,8 +7,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user, require_role
 from app.db.session import get_db
 from app.models.config import PVConfig
+from app.models.enums import UserRole
 from app.models.weather import SolarGenerationEstimate
 from app.schemas.solar import PVConfigRead, SolarGenerationListResponse, SolarGenerationRead
 
@@ -17,7 +19,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/solar", tags=["solar"])
 
 
-@router.get("/pv-config", response_model=PVConfigRead)
+@router.get(
+    "/pv-config",
+    response_model=PVConfigRead,
+    dependencies=[Depends(require_role(UserRole.ADMIN))],
+)
 def get_pv_config(
     estate_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
@@ -49,7 +55,11 @@ def get_pv_config(
     )
 
 
-@router.get("/generation", response_model=SolarGenerationListResponse)
+@router.get(
+    "/generation",
+    response_model=SolarGenerationListResponse,
+    dependencies=[Depends(get_current_user)],
+)
 def get_solar_generation(
     estate_id: Optional[int] = Query(None),
     limit: int = Query(24, ge=1, le=720),

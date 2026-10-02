@@ -26,7 +26,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.api.deps import require_role
+from app.api.deps import get_current_user, require_role
 from app.core.config import settings
 from app.db.session import get_db
 from app.models.config import PVConfig
@@ -169,19 +169,31 @@ def _ensure_active_pv_config(db: Session, estate_id: int) -> PVConfig:
     return pv_config
 
 
-@router.get("/presets", response_model=List[EstatePreset])
+@router.get(
+    "/presets",
+    response_model=List[EstatePreset],
+    dependencies=[Depends(get_current_user)],
+)
 def get_presets() -> List[EstatePreset]:
     """Ready-made locations the operator may switch to in one click."""
     return PRESET_ESTATES
 
 
-@router.get("", response_model=List[EstateRead])
+@router.get(
+    "",
+    response_model=List[EstateRead],
+    dependencies=[Depends(get_current_user)],
+)
 def list_estates(db: Session = Depends(get_db)) -> List[EstateRead]:
     estates = db.query(Estate).order_by(Estate.id).all()
     return [_build_estate_read(db, estate) for estate in estates]
 
 
-@router.get("/active", response_model=EstateRead)
+@router.get(
+    "/active",
+    response_model=EstateRead,
+    dependencies=[Depends(get_current_user)],
+)
 def get_active_estate(db: Session = Depends(get_db)) -> EstateRead:
     """
     The estate the dashboard uses when no explicit `estate_id` is supplied.
@@ -195,7 +207,11 @@ def get_active_estate(db: Session = Depends(get_db)) -> EstateRead:
     return _build_estate_read(db, estate)
 
 
-@router.get("/{estate_id}", response_model=EstateRead)
+@router.get(
+    "/{estate_id}",
+    response_model=EstateRead,
+    dependencies=[Depends(get_current_user)],
+)
 def get_estate_by_id(estate_id: int, db: Session = Depends(get_db)) -> EstateRead:
     estate = db.get(Estate, estate_id)
     if estate is None:
