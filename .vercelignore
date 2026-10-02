@@ -1,0 +1,32 @@
+# Files excluded from `vercel` CLI uploads (git deploys read the repo, so the
+# function-bundle equivalents live in vercel.json under functions.excludeFiles).
+
+# Secrets — a local .env with real keys must never leave this machine.
+.env
+.env.*
+!.env.example
+
+# Local database — solarshare.db alone is ~1.5 GB.
+solarshare.db
+solarshare.db-shm
+solarshare.db-wal
+
+# Build artifacts and vendored deps (rebuilt during the deploy anyway).
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Dev-only trees: neither the Vite build nor the Python bundle needs them.
+tests/
+data/
+.github/
+.opencode/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Docker/VPS deployment files.
+Dockerfile*
+docker-compose*.yml
+Makefile
+.git/

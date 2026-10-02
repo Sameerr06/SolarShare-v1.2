@@ -1,7 +1,7 @@
 # SolarShare Backend — pinned production/Docker dependencies.
 # CI runs this file on Python 3.10, 3.11 and 3.12 (see
 # .github/workflows/python-package.yml). requirements-dev.txt holds the looser
-# pins used for local development on newer interpreters.
+# pins for local development on newer interpreters, plus the test tooling.
 
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
@@ -15,10 +15,14 @@ bcrypt==4.0.1
 python-multipart==0.0.20
 python-dotenv==1.0.1
 
-# Testing
-pytest==8.3.4
-pytest-cov==6.0.0
+# HTTP client — a RUNTIME dependency: app/integrations/nasa_power.py and
+# app/integrations/electricity_dataset.py import httpx at module level.
 httpx==0.28.1
+
+# Tests are deliberately NOT installed from this file. pytest/pytest-cov live
+# in requirements-dev.txt (CI installs pytest itself), and nothing under app/
+# imports pytest — so both the Docker image and the Vercel function bundle
+# stay free of test tooling.
 
 # Load-profile analysis (Phase 2: 321->6 tenant profile selection)
 numpy==2.2.1

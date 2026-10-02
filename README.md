@@ -105,7 +105,8 @@ locally while the port stays unreachable from the network.
 
 ```bash
 python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
-pip install -r requirements.txt                  # or requirements-dev.txt on 3.12+
+pip install -r requirements.txt                  # runtime only; requirements-dev.txt
+                                                 # (3.12+) also installs pytest
 cp .env.example .env
 uvicorn app.main:app --reload --port 8000
 
@@ -242,6 +243,10 @@ pytest                  # 308 tests
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 npm run lint            # tsc --noEmit
 ```
+
+Test tooling lives in `requirements-dev.txt`; `requirements.txt` is runtime-only
+(it is what Docker and the Vercel function bundle install), and CI installs
+pytest directly.
 
 `.github/workflows/python-package.yml` runs install → lint → pytest on Python
 3.10, 3.11 and 3.12 (3.9 was dropped: `numpy>=2.1`/`scipy>=1.14` no longer ship

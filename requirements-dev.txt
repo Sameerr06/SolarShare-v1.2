@@ -1,6 +1,10 @@
 # Auto-generated requirements for Python 3.14 compatibility
 # Uses relaxed pins for scientific packages that now have Python 3.14 wheels.
 # The original requirements.txt pins are kept for Docker (Python 3.11).
+#
+# This is the SUPERSET used for local development: runtime deps + the test
+# tooling (pytest, pytest-cov). requirements.txt is runtime-only, because it is
+# what Docker and the Vercel function bundle install.
 
 fastapi>=0.115.6
 uvicorn[standard]>=0.34.0
