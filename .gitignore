@@ -30,3 +30,8 @@ htmlcov/
 # Logs
 *.log
 node_modules
+
+# Vercel CLI link metadata + pulled environment files
+.vercel
+.env.local
+.env.*.local

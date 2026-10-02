@@ -51,9 +51,10 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import Insert
 
 from app.core.config import settings
 from app.integrations.electricity_dataset import (
@@ -68,6 +69,21 @@ from app.integrations.tsf_parser import TsfParseError, parse_tsf_streaming
 from app.models.public_load import PublicLoadObservation, PublicLoadSeries
 
 logger = logging.getLogger(__name__)
+
+
+def _dialect_insert(db: Session, table) -> Insert:
+    """Return the ON CONFLICT-capable insert construct for the active dialect.
+
+    SQLite and PostgreSQL both implement ``INSERT ... ON CONFLICT DO UPDATE``
+    with an identical SQLAlchemy API (``.on_conflict_do_update`` /
+    ``.excluded``) but expose different dialect constructs, so the choice is
+    made from the bind's dialect. That keeps ingestion byte-for-byte identical
+    on the local SQLite file, on libSQL, and on hosted PostgreSQL.
+    """
+    dialect_name = db.get_bind().dialect.name
+    if dialect_name == "postgresql":
+        return postgresql.insert(table)
+    return sqlite.insert(table)
 
 
 class ElectricityIngestionError(Exception):
@@ -107,8 +123,9 @@ def _persist_series_row(
 
 def _bulk_upsert_observations(db: Session, series_id: int, validated) -> int:
     """
-    Persist ALL observations for one series in a SINGLE SQLite upsert
-    statement, bypassing the ORM identity map entirely (Core-level
+    Persist ALL observations for one series in a SINGLE dialect-native upsert
+    (SQLite/PostgreSQL ``ON CONFLICT``, see ``_dialect_insert``), bypassing
+    the ORM identity map entirely (Core-level
     `db.execute()`, not `db.add()`). Uses the existing
     `UniqueConstraint(series_id, timestamp_local)` as the conflict target,
     so this is idempotent: re-running ingestion updates existing rows in
@@ -158,7 +175,7 @@ def _bulk_upsert_observations(db: Session, series_id: int, validated) -> int:
 
     table = PublicLoadObservation.__table__
     # Deliberately NOT using .values(rows) here -- see performance note above.
-    stmt = sqlite_insert(table)
+    stmt = _dialect_insert(db, table)
     stmt = stmt.on_conflict_do_update(
         index_elements=["series_id", "timestamp_local"],
         set_={

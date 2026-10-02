@@ -1,9 +1,26 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "app/main.py": {
-      "maxDuration": 300,
-      "excludeFiles": "{.env,.env.*,.venv/**,venv/**,solarshare.db*,data/**,tests/**,src/**,dist/**,node_modules/**,.github/**,.opencode/**,.pytest_cache/**,.git/**,**/__pycache__/**,*.tsbuildinfo,package-lock.json,Dockerfile*,docker-compose*.yml,Makefile}"
+  "services": {
+    "web": {
+      "root": ".",
+      "framework": "vite",
+      "installCommand": "npm ci",
+      "outputDirectory": "dist",
+      "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+    },
+    "api": {
+      "root": ".",
+      "runtime": "container",
+      "functions": {
+        "app/main.py": {
+          "maxDuration": 300,
+          "excludeFiles": "{.env,.env.*,.venv/**,venv/**,solarshare.db*,data/**,tests/**,src/**,dist/**,node_modules/**,.github/**,.opencode/**,.pytest_cache/**,.git/**,**/__pycache__/**,*.tsbuildinfo,package-lock.json,Dockerfile*,docker-compose*.yml,Makefile}"
+        }
+      }
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
 }

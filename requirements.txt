@@ -19,6 +19,11 @@ python-dotenv==1.0.1
 # app/integrations/electricity_dataset.py import httpx at module level.
 httpx==0.28.1
 
+# PostgreSQL driver (production database on Vercel/Neon). Wheels exist for
+# Windows/macOS/Linux, so local dev installs it too even while DATABASE_URL
+# still points at SQLite.
+psycopg[binary]==3.3.6
+
 # Tests are deliberately NOT installed from this file. pytest/pytest-cov live
 # in requirements-dev.txt (CI installs pytest itself), and nothing under app/
 # imports pytest — so both the Docker image and the Vercel function bundle

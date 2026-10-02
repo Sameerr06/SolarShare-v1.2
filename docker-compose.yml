@@ -27,6 +27,9 @@ services:
       DATABASE_URL: sqlite:////app/db_data/solarshare.db
       # Point ingestion at the mounted dataset (POSIX path inside the container)
       ELECTRICITY_DATASET_LOCAL_PATH: /app/data/electricity_hourly_dataset.tsf
+      # Seed the demo estate/tenants/users on start (idempotent). Vercel leaves
+      # this unset so cold starts don't re-hash passwords.
+      SEED_DEMO: "true"
     volumes:
       # Persist the SQLite database outside the container
       - db_data:/app/db_data

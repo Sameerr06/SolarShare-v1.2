@@ -11,7 +11,7 @@ each of them against the Tamil Nadu time-of-use tariff.
 
 * **Backend** — FastAPI, SQLAlchemy 2, Pydantic v2, Prophet, scikit-learn, ReportLab
 * **Frontend** — React 18 + Vite + TypeScript + Tailwind + Recharts
-* **Delivery** — multi-stage Docker images orchestrated with Compose, GitHub Actions CI
+* **Delivery** — multi-stage Docker images orchestrated with Compose, GitHub Actions CI, Vercel Services (container + static)
 * **Tests** — 308 pytest tests, green on Python 3.10 / 3.11 / 3.12
 
 ---
@@ -163,7 +163,7 @@ Nothing is hardcoded in business logic.
 | Variable | Default | Notes |
 |---|---|---|
 | `APP_NAME` / `APP_ENV` / `DEBUG` | `SolarShare` / `development` / `true` | set `APP_ENV=production`, `DEBUG=false` when deploying |
-| `DATABASE_URL` | `sqlite:///./solarshare.db` | Compose overrides this to the `db_data` volume |
+| `DATABASE_URL` | `sqlite:///./solarshare.db` | Compose overrides this to the `db_data` volume. Plain `postgres://` / `postgresql://` URLs are accepted and routed to psycopg 3 automatically (`app/db/session.py`); a `-pooler` host (Neon pooled endpoint) additionally disables prepared statements |
 | `JWT_SECRET_KEY` | placeholder | **must** be replaced: `openssl rand -hex 32` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` | token lifetime |
 | `CORS_ORIGINS` | localhost dev servers | only needed when the frontend is hosted separately |
@@ -221,7 +221,66 @@ docker run --rm -v <project>_db_data:/data -v "$PWD":/backup alpine \
 
 The volume name is `<directory>_db_data`; confirm with `docker volume ls`.
 
-### Option B — split hosting
+### Option B — Vercel (single project, Services)
+
+Frontend and backend ship as **one Vercel project with two services** (`vercel.json`):
+the `web` service builds the Vite bundle to the CDN, the `api` service builds the
+repo `Dockerfile` into a container function, and a top-level rewrite sends `/api/*`
+to the backend and everything else to the frontend. Same origin, so the frontend
+needs no `VITE_API_BASE_URL` and CORS is never involved.
+
+SQLite cannot be used there (read-only, ephemeral filesystem), so the database is
+PostgreSQL. Neon's free tier is provisioned through the Vercel marketplace, which
+injects `DATABASE_URL` for every environment — no manual wiring.
+
+```bash
+npm i -g vercel            # or: npx vercel ...
+
+vercel login
+vercel project add solarshare
+vercel link --project solarshare --yes
+
+# Neon (Postgres) via the Vercel marketplace — injects DATABASE_URL
+vercel integration add neon --name solarshare-db --no-connect
+vercel storage connect solarshare-db --project solarshare --yes
+
+# Required secrets / flags
+vercel env add JWT_SECRET_KEY production --value "$(openssl rand -hex 32)" --yes
+vercel env add APP_ENV production --value production --yes
+vercel env add DEBUG production --value false --yes
+# The scientific stack (scipy/pandas/sklearn/prophet) pushes the image past the
+# standard 1 GB function limit; opt into Large Functions (up to 5 GB).
+vercel env add VERCEL_SUPPORT_LARGE_FUNCTIONS production --value 1 --yes
+
+vercel deploy --prod
+```
+
+Migrate the local SQLite database into PostgreSQL once (schema comes from the same
+`Base.metadata.create_all` the app runs at startup, so it cannot drift):
+
+```bash
+vercel env pull --project solarshare --environment production   # writes .env.local
+# Full dataset (~1 GB — needs a paid plan):
+python scripts/migrate_sqlite_to_postgres.py --target "$MIGRATE_DATABASE_URL"
+# Neon's 0.5 GB free storage cap: migrate the 6 selected series only (~35 MB):
+python scripts/migrate_sqlite_to_postgres.py --selected-only
+```
+
+The script is idempotent (`ON CONFLICT DO NOTHING`), streams in batches, and
+advances the Postgres sequences afterwards so app-side inserts don't collide with
+migrated ids. Point it at `DATABASE_URL_UNPOOLED` (a single migration connection
+should not go through the pooler).
+
+Verify: `curl https://<your-domain>/api/health` → `{"status":"ok","database":"ok"}`.
+
+**CI/CD.** Connect the repository in Vercel (Settings → Git) and every push to
+`master` deploys; pull requests get preview deployments that reuse the same
+`DATABASE_URL` preview variable. For GitHub-Actions-driven deploys, add a
+`VERCEL_TOKEN` (Account Settings → Tokens) plus `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID`
+as repository secrets and run `vercel deploy --prod --token "$VERCEL_TOKEN"` after the
+pytest job.
+
+### Option C — split hosting
 
 | Piece | Where | Notes |
 |---|---|---|
@@ -261,8 +320,10 @@ requiring a token.
 * **No migrations.** The schema is created with `create_all()` on startup, so a
   schema change does not alter an existing database — recreate the volume
   (`docker compose down -v`) to pick up model changes.
-* **SQLite, one worker.** Uvicorn runs with `--workers 1` deliberately. Scaling
-  out needs PostgreSQL (`DATABASE_URL` is already swappable) and migrations.
+* **SQLite, one worker (Compose).** Uvicorn runs with `--workers 1` deliberately.
+  PostgreSQL is now supported as well — `DATABASE_URL` decides, and the backend
+  runs on it in production (Option B) — but there are still no schema migrations:
+  `create_all()` only creates missing tables, it never alters existing ones.
 * **No rate limiting or account lockout** on `/api/auth/login`.
 * **No HTTPS inside Compose** — put a reverse proxy in front (Option A).
 * **Fair allocation is not implemented**; the endpoint returns a labelled demo split.
@@ -288,7 +349,8 @@ app/
   services/     ingestion, profiling, forecasting, billing, invoicing, PDF
   integrations/ NASA POWER client, Zenodo .tsf parser, dataset provenance
   resources/models/  cached tenant Prophet models
-scripts/        seed_demo.py, train_tenant_models.py, generate_invoice_pdf.py
+scripts/        seed_demo.py, train_tenant_models.py, generate_invoice_pdf.py,
+                migrate_sqlite_to_postgres.py (SQLite → PostgreSQL, one-off)
 src/            React SPA (pages/, components/, api/, contexts/)
 tests/          pytest suite (in-memory SQLite, offline)
 data/           Zenodo .tsf dataset (mounted, not baked into the image)

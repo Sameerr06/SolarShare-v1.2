@@ -48,7 +48,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Unbuffered stdout/stderr so container logs stream live under `docker logs`.
 # PYTHONDONTWRITEBYTECODE keeps the runtime tree free of stray .pyc files.
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    MPLCONFIGDIR=/tmp/matplotlib
 
 WORKDIR /app
 
@@ -75,11 +76,18 @@ USER solarshare
 HEALTHCHECK --interval=10s --timeout=5s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')" || exit 1
 
-# Seed DB (idempotent) then start Uvicorn.
+# Seed the demo estate/tenants/users (idempotent), then start Uvicorn.
 # `exec` makes uvicorn PID 1 so it receives SIGTERM directly and shuts down
 # gracefully; without it, `sh` stays PID 1 and swallows the signal, forcing
 # Docker to SIGKILL after the grace period.
 # PYTHONPATH=/app is required: running `python scripts/seed_demo.py` puts
 # `scripts/` (not /app) on sys.path, so `import app` fails without it.
 # Seeding is non-fatal: a seed failure must not take the API down.
-CMD ["sh", "-c", "PYTHONPATH=/app python scripts/seed_demo.py || echo '[seed] failed - continuing with existing data'; exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1 --proxy-headers"]
+#
+# Two deployment-target switches:
+#   * SEED_DEMO=false skips seeding. Compose sets it to true; Vercel (where a
+#     cold start re-runs this CMD against an already-migrated PostgreSQL
+#     database) leaves it false so no bcrypt hashing happens on every cold start.
+#   * $PORT is honoured because serverless platforms inject the listening port;
+#     Compose injects nothing, so it falls back to 8000.
+CMD ["sh", "-c", "if [ \"${SEED_DEMO:-false}\" = \"true\" ]; then PYTHONPATH=/app python scripts/seed_demo.py || echo '[seed] failed - continuing with existing data'; fi; exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --proxy-headers"]

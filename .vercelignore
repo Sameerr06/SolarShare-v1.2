@@ -25,8 +25,7 @@ data/
 __pycache__/
 *.py[cod]
 
-# Docker/VPS deployment files.
-Dockerfile*
-docker-compose*.yml
-Makefile
+# NOTE: Dockerfile / docker-compose.yml / Makefile must NOT be listed here —
+# the backend is deployed as a container service, so Vercel needs the Dockerfile
+# to be part of the uploaded source.
 .git/

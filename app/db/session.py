@@ -17,12 +17,51 @@ class Base(DeclarativeBase):
     pass
 
 
+def _normalize_database_url(url: str) -> str:
+    """Make a plain Postgres URL usable by SQLAlchemy + the psycopg 3 driver.
+
+    Hosted Postgres providers (Vercel marketplace integrations, Neon, Supabase,
+    Railway...) hand out ``postgres://`` / ``postgresql://`` connection strings.
+    SQLAlchemy would route those to psycopg2, which this project does not
+    install, so rewrite the scheme to the psycopg 3 driver it does install.
+    """
+    if url.startswith("postgres://") or url.startswith("postgresql://"):
+        _, _, rest = url.partition("://")
+        return f"postgresql+psycopg://{rest}"
+    return url
+
+
+def _postgres_connect_args(url: str) -> dict:
+    """Driver options for a transaction-pooling endpoint.
+
+    Neon's *pooled* endpoint sits behind a proxy that multiplexes connections
+    per transaction and cannot serve protocol-level prepared statements. psycopg
+    3 exposes this as ``prepare_threshold=None`` (never prepare); the older
+    ``pgbouncer=true`` conninfo option only exists on the asyncio driver.
+    """
+    if "-pooler" in url:
+        return {"prepare_threshold": None}
+    return {}
+
+
 def _make_engine():
     connect_args = {}
+    engine_kwargs = {"future": True}
     if settings.is_sqlite:
         # Needed for SQLite when used with FastAPI's threaded request handling.
         connect_args = {"check_same_thread": False}
-    return create_engine(settings.database_url, connect_args=connect_args, future=True)
+    else:
+        # Remote database (PostgreSQL on Vercel/Neon): connections sit idle in
+        # the pool between requests and can be closed server-side, so validate
+        # them on checkout and recycle them well before the server's idle
+        # timeout instead of surfacing "server closed the connection" 500s.
+        engine_kwargs.update(pool_pre_ping=True, pool_recycle=1800)
+        connect_args.update(_postgres_connect_args(settings.database_url))
+    return create_engine(
+        _normalize_database_url(settings.database_url),
+        connect_args=connect_args,
+        **engine_kwargs,
+    )
 
 
 engine = _make_engine()
