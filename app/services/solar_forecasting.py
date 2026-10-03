@@ -197,8 +197,16 @@ def generate_solar_forecast(
         df = prepare_training_data(db, estate_id=estate_id)
         model = train_prophet_model(df)
     except Exception as exc:
-        logger.warning("Prophet model training failed or missing data for estate_id=%s: %s", estate_id, exc)
-        return _fallback_demo_forecast(estate_id, hours, str(exc), tz=tz)
+        # logger.exception (not warning) so the full traceback reaches the
+        # operator: a silent fallback to a bell curve is a production incident,
+        # not an informational event.
+        logger.exception(
+            "Prophet solar model unavailable for estate_id=%s — falling back to the "
+            "DEMO curve. The response returned to the client is flagged is_demo=True "
+            "with fallback_reason set; it is NOT a model output.",
+            estate_id,
+        )
+        return _fallback_demo_forecast(estate_id, hours, f"{type(exc).__name__}: {exc}", tz=tz)
 
     min_ts = df["ds"].min()
     max_ts = df["ds"].max()
@@ -320,10 +328,15 @@ def _fallback_demo_forecast(
         total_generation_forecast_kwh=round(total_kwh, 2),
         peak_generation_kw=peak_kw,
         is_demo=True,
-        explanatory_note=f"Fallback demo response — Prophet model unavailable ({reason}).",
+        explanatory_note=(
+            "FALLBACK DEMO CURVE — NOT A MODEL OUTPUT. The Prophet solar model could "
+            f"not be produced: {reason}. No solar forecast was actually computed for "
+            "this request."
+        ),
         model_name="Prophet (Demo Fallback)",
         training_record_count=0,
         training_start_date=None,
         training_end_date=None,
         generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        fallback_reason=reason,
     )

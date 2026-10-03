@@ -172,3 +172,76 @@ def test_tenant_forecasting_api_endpoint(client, db_session, admin_auth):
     # Since we seeded the database and have the models cached/trained, it should return is_demo=False
     assert data["is_demo"] is False
     assert len(data["forecast_data"]) == 12
+    # A real model run must not carry a fallback reason.
+    assert data["fallback_reason"] is None
+
+
+# ---------------------------------------------------------------------------
+# Degradation must be loud — see the equivalent note in
+# tests/test_solar_forecasting.py. The tenant path previously degraded silently
+# to a synthetic load curve, which is the worse failure of the two: a tenant
+# would act on a demand number that no model ever produced.
+# ---------------------------------------------------------------------------
+
+
+def test_tenant_forecast_fallback_is_flagged_with_reason(db_session, tmp_path):
+    from app.models.estate import Estate
+    from app.models.enums import TenantProfileType
+    from app.models.tenant import Tenant
+    from app.services import tenant_forecasting
+
+    estate = Estate(name="Fallback Estate", latitude=11.0168, longitude=76.9558)
+    db_session.add(estate)
+    db_session.commit()
+    db_session.refresh(estate)
+
+    tenant = Tenant(
+        estate_id=estate.id,
+        name="Unseeded Tenant",
+        profile_type=TenantProfileType.TEXTILE_MANUFACTURING,
+    )
+    db_session.add(tenant)
+    db_session.commit()
+    db_session.refresh(tenant)
+
+    # Two conditions must both hold for training to fail, and the repo ships
+    # real cached models in app/resources/models/ — so point MODELS_DIR at an
+    # empty directory (cache miss) and leave PublicLoadObservation empty
+    # (training impossible).
+    original_models_dir = tenant_forecasting.MODELS_DIR
+    tenant_forecasting.MODELS_DIR = tmp_path
+    try:
+        res = generate_tenant_forecast(db_session, tenant_id=tenant.id, hours=12)
+    finally:
+        tenant_forecasting.MODELS_DIR = original_models_dir
+
+    assert res.is_demo is True
+    assert res.model_name == "Prophet (Demo Fallback)"
+    assert res.training_record_count == 0
+    assert res.fallback_reason, "fallback_reason must be populated on the demo path"
+    assert "FALLBACK DEMO CURVE" in res.explanatory_note
+    assert "NOT A MODEL OUTPUT" in res.explanatory_note
+    assert len(res.forecast_data) == 12
+
+
+def test_tenant_forecast_fallback_reason_surfaces_over_http(
+    client, db_session, make_tenant_token, tmp_path
+):
+    from app.services import tenant_forecasting
+
+    token = make_tenant_token(1)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    original_models_dir = tenant_forecasting.MODELS_DIR
+    tenant_forecasting.MODELS_DIR = tmp_path
+    try:
+        res = client.get("/api/forecasting/tenants/1?hours=12", headers=headers)
+    finally:
+        tenant_forecasting.MODELS_DIR = original_models_dir
+
+    assert res.status_code == 200
+    payload = res.json()
+
+    assert payload["is_demo"] is True
+    assert payload["fallback_reason"]
+    assert "NOT A MODEL OUTPUT" in payload["explanatory_note"]

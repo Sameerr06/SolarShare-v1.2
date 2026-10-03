@@ -12,7 +12,7 @@ each of them against the Tamil Nadu time-of-use tariff.
 * **Backend** — FastAPI, SQLAlchemy 2, Pydantic v2, Prophet, scikit-learn, ReportLab
 * **Frontend** — React 18 + Vite + TypeScript + Tailwind + Recharts
 * **Delivery** — multi-stage Docker images orchestrated with Compose, GitHub Actions CI, Vercel Services (container + static)
-* **Tests** — 308 pytest tests, green on Python 3.10 / 3.11 / 3.12
+* **Tests** — 318 pytest tests, green on Python 3.10 / 3.11 / 3.12
 
 ---
 
@@ -164,8 +164,9 @@ Nothing is hardcoded in business logic.
 |---|---|---|
 | `APP_NAME` / `APP_ENV` / `DEBUG` | `SolarShare` / `development` / `true` | set `APP_ENV=production`, `DEBUG=false` when deploying |
 | `DATABASE_URL` | `sqlite:///./solarshare.db` | Compose overrides this to the `db_data` volume. Plain `postgres://` / `postgresql://` URLs are accepted and routed to psycopg 3 automatically (`app/db/session.py`); a `-pooler` host (Neon pooled endpoint) additionally disables prepared statements |
-| `JWT_SECRET_KEY` | placeholder | **must** be replaced: `openssl rand -hex 32` |
+| `JWT_SECRET_KEY` | placeholder | **must** be replaced: `openssl rand -hex 32`. Startup logs an ERROR if it is still the placeholder under `APP_ENV=production`. |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` | token lifetime |
+| `ALLOW_ADMIN_REGISTRATION` | `false` | `POST /api/auth/register` is unauthenticated, so `role` is caller-controlled. With the default, public registration can only create **TENANT** accounts (forced to bind to a real `tenant_id`) and an ADMIN registration attempt gets `403`. Set `true` **only** for a throwaway demo — startup then logs a `SECURITY:` WARNING. Administrators are otherwise provisioned by `scripts/seed_demo.py`. |
 | `CORS_ORIGINS` | localhost dev servers | only needed when the frontend is hosted separately |
 | `NASA_POWER_*` | public API defaults | community, parameters, retries, fill value, data lag |
 | `ELECTRICITY_DATASET_*` | Zenodo provenance | `..._LOCAL_PATH` points at the mounted `.tsf` |
@@ -298,7 +299,7 @@ is what CI and the Dockerfiles already exercise.
 ## Testing and CI
 
 ```bash
-pytest                  # 308 tests
+pytest                  # 318 tests
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 npm run lint            # tsc --noEmit
 ```
@@ -325,6 +326,10 @@ requiring a token.
   runs on it in production (Option B) — but there are still no schema migrations:
   `create_all()` only creates missing tables, it never alters existing ones.
 * **No rate limiting or account lockout** on `/api/auth/login`.
+* **Public self-registration is tenant-only.** `POST /api/auth/register` cannot create
+  ADMIN accounts unless `ALLOW_ADMIN_REGISTRATION=true` (`app/api/routes_auth.py`),
+  which is off by default and logged as a `SECURITY:` WARNING at startup. There is
+  no admin user-management UI — admins come from `scripts/seed_demo.py`.
 * **No HTTPS inside Compose** — put a reverse proxy in front (Option A).
 * **Fair allocation is not implemented**; the endpoint returns a labelled demo split.
 * **Billing numbers are prototype values**, not metered readings; the ToU tariff
@@ -368,3 +373,17 @@ real specifications, and the schema says so on the row itself:
   prototype rate, not an official tariff.
 * Forecast, dashboard, billing and allocation payloads carry `is_demo` and an
   `explanatory_note` whenever prototype values are involved.
+
+Two consequences worth knowing when reading an API response:
+
+* **A degraded model says so.** If Prophet cannot be trained, the response carries
+  `is_demo: true`, `model_name: "Prophet (Demo Fallback)"`, and a populated
+  `fallback_reason` holding the underlying failure; the backend logs the full
+  traceback at `ERROR`. A demo curve is never presented as a model output.
+* **Absent readings are `null`, not `0`.** `GET /api/solar/generation` joins the
+  stored `WeatherObservation` and `PVConfig` rows, so `ghi_wm2` and
+  `ambient_temperature_c` are measured, `capacity_kw` / `performance_ratio` come
+  from the configuration the estimate was actually computed with, and
+  `cell_temperature_c` is a documented NOCT estimate. `dni_wm2`, `dhi_wm2` and
+  `poa_irradiance_wm2` are `null` because this integration neither retrieves nor
+  models them — a missing reading and a zero reading mean different things.

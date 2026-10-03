@@ -116,15 +116,26 @@ export interface PVConfigRead {
 export interface SolarGenerationRead {
   estate_id: number;
   timestamp_local: string;
-  ghi_wm2: number;
-  dni_wm2: number;
-  dhi_wm2: number;
-  cell_temperature_c: number;
-  poa_irradiance_wm2: number;
-  pv_power_kw: number;
-  pv_energy_kwh: number;
-  capacity_kw: number;
-  performance_ratio: number;
+  /** Measured — NASA POWER ALLSKY_SFC_SW_DWN. Null when the source row is missing. */
+  ghi_wm2: number | null;
+  /** Not retrieved by this integration (NASA POWER RE community). Always null on real records. */
+  dni_wm2: number | null;
+  /** Not retrieved by this integration (NASA POWER RE community). Always null on real records. */
+  dhi_wm2: number | null;
+  /** Measured — NASA POWER T2M. */
+  ambient_temperature_c: number | null;
+  /** NOCT model estimate derived from ambient_temperature_c + ghi_wm2. Not a measurement. */
+  cell_temperature_c: number | null;
+  /** Not modelled (no transposition model). Always null on real records. */
+  poa_irradiance_wm2: number | null;
+  /** Average power over the 1-hour interval; numerically equal to pv_energy_kwh. */
+  pv_power_kw: number | null;
+  /** Stored Model B estimate for the hour. */
+  pv_energy_kwh: number | null;
+  /** From the PVConfig row the estimate was computed with. Null if that row is gone. */
+  capacity_kw: number | null;
+  /** From the PVConfig row the estimate was computed with. Null if that row is gone. */
+  performance_ratio: number | null;
 }
 
 export interface SolarGenerationListResponse {
@@ -154,6 +165,8 @@ export interface SolarForecastResponse {
   training_start_date?: string;
   training_end_date?: string;
   generated_at?: string;
+  /** Set only when the demo fallback produced this response; carries the failure. */
+  fallback_reason?: string | null;
 }
 
 export interface TenantForecastResponse {
@@ -165,6 +178,10 @@ export interface TenantForecastResponse {
   peak_demand_kw: number;
   is_demo: boolean;
   explanatory_note?: string;
+  model_name?: string;
+  training_record_count?: number;
+  /** Set only when the demo fallback produced this response; carries the failure. */
+  fallback_reason?: string | null;
 }
 
 export interface TenantAllocationItem {

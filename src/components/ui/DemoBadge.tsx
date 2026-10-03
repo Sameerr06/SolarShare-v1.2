@@ -43,17 +43,18 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
   );
 };
 
-export const DemoBanner: React.FC<{ note?: string }> = ({ note }) => {
+export const DemoBanner: React.FC<{ note?: string; label?: string }> = ({ note, label = 'SIMULATED' }) => {
   return (
     <div
       className="w-full rounded-xl p-3 flex items-start gap-3 text-xs"
       style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)' }}
+      role="note"
     >
       <div
         className="px-2 py-0.5 rounded-full font-mono text-[10px] uppercase font-bold tracking-wider shrink-0"
         style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', color: '#7c3aed' }}
       >
-        SIMULATED
+        {label}
       </div>
       <div className="flex-1 min-w-0">
         <p className="leading-normal" style={{ color: 'var(--text-secondary)' }}>

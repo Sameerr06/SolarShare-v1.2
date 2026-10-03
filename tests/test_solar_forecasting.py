@@ -181,3 +181,43 @@ def test_get_solar_forecast_api_endpoint(client, db_session, admin_auth):
     assert payload["training_record_count"] >= 72
     assert len(payload["forecast_data"]) == 24
     assert payload["total_generation_forecast_kwh"] >= 0.0
+    # A real model run must not carry a fallback reason.
+    assert payload["fallback_reason"] is None
+
+
+# ---------------------------------------------------------------------------
+# Degradation must be loud.
+#
+# When training data is absent the service still returns a usable curve rather
+# than erroring, so the response has to make that impossible to miss: is_demo,
+# a distinct model_name, an explanatory note that says FALLBACK, and the
+# underlying failure in fallback_reason. Previously it degraded silently to a
+# bell curve with a generic note and a WARNING-level log.
+# ---------------------------------------------------------------------------
+
+
+def test_solar_forecast_fallback_is_flagged_with_reason(db_session, monkeypatch):
+    # No seeded data at all -> prepare_training_data cannot succeed.
+    response = generate_solar_forecast(db_session, estate_id=999, hours=24)
+
+    assert response.is_demo is True
+    assert response.model_name == "Prophet (Demo Fallback)"
+    assert response.training_record_count == 0
+    assert response.training_start_date is None
+    assert response.training_end_date is None
+
+    # The reason is carried, not swallowed.
+    assert response.fallback_reason, "fallback_reason must be populated on the demo path"
+    assert "FALLBACK DEMO CURVE" in response.explanatory_note
+    assert "NOT A MODEL OUTPUT" in response.explanatory_note
+    assert len(response.forecast_data) == 24
+
+
+def test_solar_forecast_fallback_reason_surfaces_over_http(client, db_session, admin_auth):
+    res = client.get("/api/forecasting/solar?estate_id=999&hours=24", headers=admin_auth)
+    assert res.status_code == 200
+    payload = res.json()
+
+    assert payload["is_demo"] is True
+    assert payload["fallback_reason"]
+    assert "NOT A MODEL OUTPUT" in payload["explanatory_note"]

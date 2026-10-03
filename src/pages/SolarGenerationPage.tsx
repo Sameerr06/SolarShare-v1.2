@@ -45,18 +45,26 @@ export const SolarGenerationPage: React.FC = () => {
   if (loading) return <LoadingState message="Loading Solar PV Telemetry..." />;
   if (error || !pvConfig || !generation) return <ErrorState message={error || 'No solar telemetry.'} onRetry={fetchData} />;
 
+  // Fields that are not measured by this integration (dni/dhi/poa) arrive as
+  // null, so every derived figure below must be null-safe rather than relying
+  // on a fabricated 0.
   const chartData = generation.records.map((r) => ({
     time: typeof r.timestamp_local === 'string' && r.timestamp_local.includes('T')
       ? r.timestamp_local.split('T')[1].substring(0, 5)
       : r.timestamp_local,
     power: r.pv_power_kw,
     ghi: r.ghi_wm2,
-    dni: r.dni_wm2,
     temp: r.cell_temperature_c,
   }));
 
-  const maxGenKw = Math.max(...generation.records.map((r) => r.pv_power_kw), 0);
-  const totalGenKwh = generation.records.reduce((acc, r) => acc + r.pv_energy_kwh, 0);
+  const maxGenKw = generation.records.reduce<number>(
+    (acc, r) => Math.max(acc, r.pv_power_kw ?? 0),
+    0,
+  );
+  const totalGenKwh = generation.records.reduce<number>(
+    (acc, r) => acc + (r.pv_energy_kwh ?? 0),
+    0,
+  );
 
   return (
     <div className="space-y-5">

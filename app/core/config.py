@@ -30,6 +30,20 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-this-to-a-long-random-secret-in-real-deployments"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    # `POST /api/auth/register` is an unauthenticated endpoint. Without this
+    # gate, anyone who can reach the API could self-register with role=ADMIN
+    # and obtain a full-privilege token — a trivial privilege escalation.
+    #
+    # Default False: public registration can only ever create a TENANT account,
+    # which is additionally forced to bind to an existing tenant_id. ADMIN
+    # accounts must be provisioned out-of-band (scripts/seed_demo.py, or an
+    # operator with database access).
+    #
+    # Set True ONLY for throwaway demo/test deployments. The test suite turns
+    # it on in tests/conftest.py so route tests can mint ADMIN tokens; nothing
+    # in app/ or scripts/ sets it. main.py logs a WARNING at startup when it is
+    # enabled, so an exposed deployment is visible in the logs.
+    allow_admin_registration: bool = False
 
     # --- Logging ---
     log_level: str = "INFO"

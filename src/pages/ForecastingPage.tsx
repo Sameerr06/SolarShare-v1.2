@@ -91,7 +91,10 @@ export const ForecastingPage: React.FC = () => {
       {/* Provenance Banners */}
       <div className="flex flex-col gap-2.5">
         {solarForecast.is_demo ? (
-          <DemoBanner note={solarForecast.explanatory_note} />
+          <DemoBanner
+            label="SOLAR MODEL UNAVAILABLE"
+            note={solarForecast.explanatory_note}
+          />
         ) : (
           <div className="w-full bg-white border border-slate-200 rounded-lg p-3 text-xs text-slate-700 flex items-start gap-2.5">
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-mono text-[10px] shrink-0 font-medium">
@@ -106,7 +109,15 @@ export const ForecastingPage: React.FC = () => {
           </div>
         )}
 
-        {tenantForecast && !tenantForecast.is_demo && (
+        {/* A demo tenant forecast must be labelled too — previously this banner
+            rendered only on the real path, so a fallback curve was shown with no
+            indication that no model had produced it. */}
+        {tenantForecast.is_demo ? (
+          <DemoBanner
+            label="TENANT MODEL UNAVAILABLE"
+            note={tenantForecast.explanatory_note}
+          />
+        ) : (
           <div className="w-full bg-white border border-slate-200 rounded-lg p-3 text-xs text-slate-700 flex items-start gap-2.5">
             <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 font-mono text-[10px] shrink-0 font-medium">
               TENANT MODEL

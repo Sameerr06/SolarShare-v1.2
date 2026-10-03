@@ -1,6 +1,16 @@
 """
 Authentication endpoints: register, login (OAuth2 password flow), and the
 current-user endpoint.
+
+Security note on registration
+----------------------------
+`POST /api/auth/register` is intentionally unauthenticated (it is how a tenant
+account gets created for the first time), which makes `role` an
+attacker-controlled field unless it is gated. `settings.allow_admin_registration`
+(default False) closes that: with the default configuration the endpoint can
+only mint TENANT accounts, and an ADMIN can only be provisioned out-of-band
+(`scripts/seed_demo.py` or direct database access). Requesting ADMIN while the
+flag is off is refused with 403 and logged at WARNING.
 """
 
 import logging
@@ -11,8 +21,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core.config import settings
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.session import get_db
+from app.models.enums import UserRole
 from app.models.tenant import Tenant
 from app.models.user import User
 from app.schemas.auth import Token, UserRead, UserRegister
@@ -26,6 +38,25 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(payload: UserRegister, db: Session = Depends(get_db)) -> UserRead:
+    # Privilege-escalation gate. `role` arrives from an unauthenticated caller,
+    # so an ADMIN may only be created when the deployment has explicitly opted
+    # into open admin registration (demos/tests) — otherwise registration is
+    # limited to TENANT accounts, which the UserRegister validator in turn
+    # forces to bind to a real tenant_id.
+    if payload.role == UserRole.ADMIN and not settings.allow_admin_registration:
+        logger.warning(
+            "Rejected unauthenticated ADMIN registration attempt for email=%r "
+            "(allow_admin_registration is disabled)",
+            payload.email,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=(
+                "Public registration cannot create ADMIN accounts. "
+                "Provision administrators out-of-band (e.g. scripts/seed_demo.py)."
+            ),
+        )
+
     existing = db.query(User).filter(func.lower(User.email) == payload.email.lower()).first()
     if existing is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or email already registered")

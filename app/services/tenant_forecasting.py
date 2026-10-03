@@ -154,8 +154,15 @@ def generate_demo_tenant_forecast(
     tenant_name: str,
     hours: int,
     start_time: datetime,
+    fallback_reason: Optional[str] = None,
 ) -> TenantForecastResponse:
-    """Fallback generator that builds a simulated tenant load forecast (returns is_demo=True)."""
+    """
+    Fallback generator that builds a simulated tenant load forecast.
+
+    Returns ``is_demo=True`` always. ``fallback_reason`` carries the underlying
+    failure that triggered the fallback so the degradation is visible to the
+    caller rather than hidden behind a plausible-looking curve.
+    """
     data: List[ForecastDataPoint] = []
     total_kwh = 0.0
     peak_kw = 0.0
@@ -198,7 +205,18 @@ def generate_demo_tenant_forecast(
         total_consumption_forecast_kwh=round(total_kwh, 2),
         peak_demand_kw=round(peak_kw, 2),
         is_demo=True,
-        explanatory_note="Prototype demo response — Prophet model training failed or missing data.",
+        explanatory_note=(
+            "FALLBACK DEMO CURVE — NOT A MODEL OUTPUT. "
+            + (
+                f"The Prophet load model could not be produced: {fallback_reason}. "
+                "No forecast was actually computed for this request."
+                if fallback_reason
+                else "Prototype demo response — Prophet model training failed or missing data."
+            )
+        ),
+        model_name="Prophet (Demo Fallback)",
+        training_record_count=0,
+        fallback_reason=fallback_reason,
     )
 
 
@@ -292,9 +310,20 @@ def generate_tenant_forecast(
             explanatory_note=explanatory_note,
         )
     except Exception as exc:
-        logger.warning(
-            "Prophet tenant forecasting failed or missing data for series %s: %s. Falling back to demo forecast.",
+        # logger.exception (not warning) so the full traceback reaches the
+        # operator: degrading to a synthetic load curve silently would let a
+        # tenant act on a number that was never modelled.
+        logger.exception(
+            "Prophet tenant forecasting failed for tenant_id=%s (series %s) — falling "
+            "back to the DEMO curve. The response returned to the client is flagged "
+            "is_demo=True with fallback_reason set; it is NOT a model output.",
+            tenant_id,
             series_name,
-            exc,
         )
-        return generate_demo_tenant_forecast(tenant_id, tenant_name, hours, start_dt)
+        return generate_demo_tenant_forecast(
+            tenant_id,
+            tenant_name,
+            hours,
+            start_dt,
+            fallback_reason=f"{type(exc).__name__}: {exc}",
+        )

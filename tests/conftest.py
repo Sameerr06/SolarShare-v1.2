@@ -13,9 +13,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.core.config import settings
 from app.db.session import Base, get_db
 from app.main import app
 from app.models import base as _register_models  # noqa: F401  (ensures models are registered)
+
+# `POST /api/auth/register` refuses to mint ADMIN accounts unless
+# settings.allow_admin_registration is enabled (default False in every real
+# deployment — see app/api/routes_auth.py). The route tests legitimately need
+# ADMIN tokens, so the suite opts in explicitly here rather than weakening the
+# production default. Nothing under app/ or scripts/ sets this.
+settings.allow_admin_registration = True
 
 TEST_DATABASE_URL = "sqlite://"  # in-memory
 

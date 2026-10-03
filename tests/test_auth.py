@@ -54,6 +54,65 @@ def test_register_tenant_requires_tenant_id(client):
     assert resp.status_code == 422
 
 
+# ---------------------------------------------------------------------------
+# Privilege-escalation gate on the unauthenticated register endpoint.
+#
+# `role` arrives from an anonymous caller, so it must not be trusted. With
+# settings.allow_admin_registration at its default (False) public registration
+# can only ever mint TENANT accounts. tests/conftest.py flips the flag on
+# globally so the rest of this file (and the 91 route-auth cases) can obtain
+# ADMIN tokens; these cases turn it back off to pin the production default.
+# ---------------------------------------------------------------------------
+
+
+def test_public_registration_cannot_self_escalate_to_admin(client, monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "allow_admin_registration", False)
+
+    resp = client.post(
+        "/api/auth/register",
+        json={"email": "sneaky@example.com", "password": "SneakyPass123!", "role": "ADMIN"},
+    )
+    assert resp.status_code == 403, resp.text
+    assert "ADMIN" in resp.json()["detail"]
+
+    # And the account genuinely does not exist — no token was ever issued.
+    login = client.post(
+        "/api/auth/login", data={"username": "sneaky@example.com", "password": "SneakyPass123!"}
+    )
+    assert login.status_code == 401
+
+
+def test_public_registration_still_allows_tenant_when_admin_gate_closed(client, db_session, monkeypatch):
+    """Closing the ADMIN path must not close legitimate tenant self-registration."""
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "allow_admin_registration", False)
+    _, tenant = _create_estate_and_tenant(db_session)
+
+    resp = client.post(
+        "/api/auth/register",
+        json={
+            "email": "tenant@example.com",
+            "password": "TenantPass123!",
+            "role": "TENANT",
+            "tenant_id": tenant.id,
+        },
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["role"] == "TENANT"
+
+
+def test_admin_registration_allowed_when_explicitly_opted_in(client):
+    """The escape hatch works, and is the only way an ADMIN can be created here."""
+    from app.core.config import settings
+
+    assert settings.allow_admin_registration is True  # set by tests/conftest.py
+    body = _register_admin(client, email="opted-in-admin@example.com")
+    assert body["role"] == "ADMIN"
+
+
 def test_register_tenant_user_with_valid_tenant_id(client, db_session):
     _, tenant = _create_estate_and_tenant(db_session)
     resp = client.post(

@@ -41,6 +41,20 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting %s (%s)", settings.app_name, settings.app_env)
+    # Loud, unmissable signal: with this on, anyone who can reach
+    # POST /api/auth/register can mint themselves an ADMIN token.
+    if settings.allow_admin_registration:
+        logger.warning(
+            "SECURITY: ALLOW_ADMIN_REGISTRATION is enabled. The unauthenticated "
+            "POST /api/auth/register endpoint can create ADMIN accounts. This is "
+            "acceptable for a throwaway demo only — set ALLOW_ADMIN_REGISTRATION=false "
+            "and provision administrators via scripts/seed_demo.py for any real deployment."
+        )
+    if settings.app_env == "production" and settings.jwt_secret_key.startswith("change-this"):
+        logger.error(
+            "SECURITY: JWT_SECRET_KEY is still the placeholder default in a production "
+            "environment. Set JWT_SECRET_KEY to a long random value (e.g. openssl rand -hex 32)."
+        )
     init_db()
     yield
     logger.info("Shutting down %s", settings.app_name)

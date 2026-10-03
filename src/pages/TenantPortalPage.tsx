@@ -140,7 +140,27 @@ export const TenantPortalPage: React.FC = () => {
         </div>
       </div>
 
-      <DemoBanner note="Real Prophet Model Forecast (Trained on Zenodo Public Load Curves)" />
+      {/* Provenance: driven by the API's is_demo flag, never asserted. A fallback
+          curve must be labelled as such — a tenant must never be shown a
+          plausible-looking forecast that no model produced. */}
+      {forecast?.is_demo ? (
+        <DemoBanner
+          label="MODEL UNAVAILABLE — DEMO CURVE"
+          note={forecast.explanatory_note}
+        />
+      ) : (
+        <div className="w-full bg-white border border-slate-200 rounded-lg p-3 text-xs text-slate-700 flex items-start gap-2.5">
+          <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 font-mono text-[10px] shrink-0 font-medium">
+            LOAD MODEL
+          </span>
+          <div className="flex-1 min-w-0">
+            <span className="font-semibold text-slate-800 mr-2">Prophet, trained on public load curves</span>
+            <span className="text-slate-500 text-[11px]">
+              {forecast?.explanatory_note}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Top Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -189,12 +209,23 @@ export const TenantPortalPage: React.FC = () => {
                 24-Hour Load Forecast & Confidence Interval
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Prophet demand model prediction for {tenantName} ({seriesId}).
+                {forecast?.is_demo
+                  ? `Illustrative load curve for ${tenantName} (${seriesId}) — no model output.`
+                  : `Prophet demand model prediction for ${tenantName} (${seriesId}).`}
               </p>
             </div>
-            <span className="px-2.5 py-1 text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 rounded-md shrink-0 font-medium">
-              Prophet Model Active
-            </span>
+            {forecast?.is_demo ? (
+              <span
+                className="px-2.5 py-1 text-[11px] font-mono bg-amber-500/10 border border-amber-500/30 text-amber-700 rounded-md shrink-0 font-medium"
+                title={forecast.fallback_reason || undefined}
+              >
+                Model Unavailable
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 rounded-md shrink-0 font-medium">
+                Prophet Model Active
+              </span>
+            )}
           </div>
 
           <div className="h-72 w-full pt-2">
